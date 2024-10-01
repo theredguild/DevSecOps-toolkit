@@ -1,4 +1,4 @@
-name: Test Container Sec Tools
+name: Test Security Tools container build
 
 on:
   push:
@@ -16,9 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and test all tools
+      - name: Build and test container
         run: |
-          for tool in $(make list | tail -n +2); do
-            echo "Testing tool: $tool"
-            make test $tool
-          done
+          make test

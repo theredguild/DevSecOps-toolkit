@@ -1,20 +1,33 @@
 # container-sec-tools
-Container/s with OSS security tools
+Unified container with OSS security tools, just `make exec` and dive into the container!
 
 ## Usage
 
 ```bash
 % make
 Usage:
-  make <target> [tool] [args...]
+  make <target>
 
 Targets:
-  build-all                Build Docker images for all tools
-  build <tool>             Build Docker image for a specific tool (e.g., make build trivy)
-  run <tool> -- [args...]  Run a specific tool (e.g., make run trufflehog -- git ssh://github.com/reynico/container-sec-tools --only-verified)
-  list                     List all available tools
-  clean                    Remove all Docker images
+  build    Build the Docker image
+  exec     Run an interactive shell inside the container
+  test     Run tests to verify the Docker image and tools
+  list     List the installed tools
+  clean    Remove the Docker image
 
-Available tools:
-  trivy trufflehog
+Optional target with parameters:
+  run      Run a command inside the Docker container
+
+Examples:
+  make
+  make build
+  make exec
+  make test
+  make clean
+  make run trivy image python:3.4-alpine
+
+
+Installed Tools:
+trivy
+trufflehog
 ```
