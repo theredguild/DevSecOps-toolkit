@@ -166,6 +166,10 @@ RUN mkdir 2ms \
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
 
+# Configure MOTD
+COPY --link --chown=root:root motd /etc/motd
+RUN echo '\ncat /etc/motd\n' >> ~/.zshrc
+
 # Set working directory
 WORKDIR /home/${USERNAME}
 CMD ["/bin/zsh"]
