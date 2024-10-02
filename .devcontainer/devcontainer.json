@@ -1,8 +1,11 @@
 {
-    "name": "Security Tools",
-    "image": "mcr.microsoft.com/devcontainers/base:debian-12",
+    "name": "OSS Security Tools",
+    
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2.12.0": {}
     },
 
     "customizations": {
@@ -19,5 +22,5 @@
         "DOCKER_CLI_EXPERIMENTAL": "enabled"
     },
 
-    "remoteUser": "vscode"
+    "remoteUser": "wanderer"
 }

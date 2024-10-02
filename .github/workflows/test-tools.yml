@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - Dockerfile
   pull_request:
     branches:
       - main
+    paths:
+      - Dockerfile
 
 jobs:
   build-and-test:
@@ -16,6 +20,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and test container
-        run: |
-          make test
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build container
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: theredguild/container-sec-tools:latest
