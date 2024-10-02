@@ -1,7 +1,3 @@
-# # Already Dockerized tools
-# FROM aquasec/trivy:latest AS trivy
-# FROM ghcr.io/trufflesecurity/trufflehog:latest AS trufflehog
-
 FROM debian:bookworm-slim AS final
 
 # Set environment variables for the user and group
@@ -9,15 +5,6 @@ ARG USERNAME=wanderer
 ARG GROUPNAME=trg
 ARG USER_UID=1000
 ARG USER_GID=1000
-
-# # Install tools from their Docker images
-# COPY --from=trivy /usr/local/bin/trivy /usr/local/bin/trivy
-# RUN echo "trivy" >> /tools.txt
-
-# COPY --from=trufflehog /usr/bin/trufflehog /usr/bin/trufflehog
-# RUN echo "trufflehog" >> /tools.txt
-
-# Install tools without Docker images
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
@@ -129,6 +116,15 @@ RUN cd $HOME \
     && source gfa/bin/activate \
     && pip install -r requirements.txt \
     && exit
+
+# Install Trivy
+RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list \
+    && sudo apt-get update && sudo apt-get install -y trivy
+
+# Install Trufflehog
+RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
+    sudo tar -xzf - trufflehog -C /usr/local/bin
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
