@@ -83,6 +83,14 @@ RUN . $ASDF_DIR/asdf.sh \
     && asdf install golang latest \
     && asdf global golang latest
 
+# Set GOBIN to /usr/local/bin for Go binaries
+ENV GOBIN=/usr/local/bin
+ENV PATH="${GOBIN}:${PATH}"
+
+# Install gitxray
+RUN . $HOME/.asdf/asdf.sh \
+    go install github.com/kulkansecurity/gitxray@latest
+
 # # Install pnpm using npm installed via asdf Node.js
 RUN npm install -g pnpm
 ENV PNPM_HOME="/home/${USERNAME}/.local/share/pnpm"
@@ -100,13 +108,14 @@ RUN pnpm install -g node-version-audit \
     better-npm-audit \
     installed-check
 
-# Set GOBIN to /usr/local/bin for Go binaries
-ENV GOBIN=/usr/local/bin
-ENV PATH="${GOBIN}:${PATH}"
+# Install detect-secrets
+RUN pipx install detect-secrets
 
 # Install gitxray
-RUN . $HOME/.asdf/asdf.sh \
-    go install github.com/kulkansecurity/gitxray@latest
+RUN pipx install gitxray
+
+# Install semgrep
+RUN pipx install semgrep
 
 # Install git-secrets
 RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
@@ -114,16 +123,10 @@ RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
     && sudo make install \
     && rm -rf secrets
 
-# Install detect-secrets
-RUN pipx install detect-secrets
-
 # Install gitleaks
 RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
     && cd gitleaks \
     && make build
-
-# Install gitxray
-RUN pipx install gitxray
 
 # Install gh-fake-analyzer
 RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git \
@@ -133,7 +136,6 @@ RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git \
     && source gfa/bin/activate \
     && pip install -r requirements.txt \
     && exit
-
 
 # Create a script to run the gh-fake-analyzer
 USER root
