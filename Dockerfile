@@ -155,7 +155,6 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
 RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
     sudo tar -xzf - trufflehog -C /usr/local/bin
 
-
 # Install 2ms
 RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip | \
     funzip - > /usr/local/bin/2ms \
@@ -179,7 +178,6 @@ RUN ARCH=$(dpkg --print-architecture) \
     && wget -q https://github.com/anchore/grype/releases/download/v0.81.0/grype_0.81.0_linux_$ARCH.deb \
     && dpkg -i grype_0.81.0_linux_$ARCH.deb \
     && rm grype_0.81.0_linux_$ARCH.deb
-
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
