@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y \
     make \
     vim \
     unzip \
+    default-jre \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a user group named trg and a user named wanderer with specified UID and GID
@@ -108,6 +109,12 @@ RUN pnpm install -g node-version-audit \
     better-npm-audit \
     installed-check
 
+# Install snyk
+RUN pnpm install -g snyk
+
+# Install retire.js
+RUN pnpm install -g retire
+
 # Install detect-secrets
 RUN pipx install detect-secrets
 
@@ -116,6 +123,9 @@ RUN pipx install gitxray
 
 # Install semgrep
 RUN pipx install semgrep
+
+# Install nodejsscan
+RUN pipx install nodejsscan
 
 # pipx environment path set
 RUN pipx ensurepath
@@ -140,6 +150,12 @@ RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git \
     && pip install -r requirements.txt \
     && exit
 
+# Install legitify
+RUN git clone https://github.com/Legit-Labs/legitify \
+    && cd legitify \
+    && go build \
+    && sudo ln -s /src/legitify/legitify /usr/local/bin/legitify
+
 # Create a script to run the gh-fake-analyzer
 USER root
 
@@ -160,6 +176,16 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
 # Install Trufflehog
 RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
     sudo tar -xzf - trufflehog -C /usr/local/bin
+
+# Install grype
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
+
+# Install dependency-check
+RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt) \
+    && curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPCHECK_VERSION}/dependency-check-${DEPCHECK_VERSION}-release.zip" --output dependency-check.zip \
+    && unzip dependency-check.zip \
+    && chmod +x dependency-check/bin/dependency-check.sh \
+    && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
 
 # Install 2ms
