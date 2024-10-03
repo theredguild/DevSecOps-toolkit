@@ -165,6 +165,16 @@ RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-a
 RUN wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
     && chmod +x /usr/local/bin/clair
 
+# Install snyk
+RUN ARCH=$(dpkg --print-architecture) \
+    && if [ "$ARCH" = "amd64" ]; then \
+    wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux; \
+    elif [ "$ARCH" = "arm64" ]; then \
+    wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux-arm64; \
+    fi \
+    && chmod +x /usr/local/bin/snyk
+
+
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
 
