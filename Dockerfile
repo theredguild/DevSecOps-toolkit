@@ -165,7 +165,7 @@ RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/do
     && sudo chmod +x /usr/local/bin/clair
 
 # Install snyk
-RUN ARCH=$(dpkg --print-architecture) \
+RUN pnpm install -g snyk
     && if [ "$ARCH" = "amd64" ]; then \
     sudo wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux; \
     elif [ "$ARCH" = "arm64" ]; then \
