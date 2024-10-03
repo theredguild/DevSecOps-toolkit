@@ -174,6 +174,12 @@ RUN ARCH=$(dpkg --print-architecture) \
     fi \
     && chmod +x /usr/local/bin/snyk
 
+# Install Grype
+RUN ARCH=$(dpkg --print-architecture) \
+    && wget -q https://github.com/anchore/grype/releases/download/v0.81.0/grype_0.81.0_linux_$ARCH.deb \
+    && dpkg -i grype_0.81.0_linux_$ARCH.deb \
+    && rm grype_0.81.0_linux_$ARCH.deb
+
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
