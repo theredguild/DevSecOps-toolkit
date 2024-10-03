@@ -156,6 +156,13 @@ RUN git clone https://github.com/Legit-Labs/legitify \
     && go build \
     && sudo ln -s /src/legitify/legitify /usr/local/bin/legitify
 
+# Install kics
+RUN git clone https://github.com/Checkmarx/kics.git \
+    && cd kics \
+    && go mod vendor \
+    && go build -o ./bin/kics cmd/console/main.go \
+    && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics
+
 # Create a script to run the gh-fake-analyzer
 USER root
 
@@ -176,6 +183,11 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
 # Install Trufflehog
 RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
     sudo tar -xzf - trufflehog -C /usr/local/bin
+
+# Install hadolint
+RUN wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 \
+    && chmod +x hadolint-Linux-x86_64 \
+    && sudo mv hadolint-Linux-x86_64 /usr/local/bin/hadolint
 
 # Install grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
