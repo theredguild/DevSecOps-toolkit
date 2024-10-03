@@ -175,7 +175,6 @@ RUN ARCH=$(dpkg --print-architecture) \
 
 # Install Grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
-    && wget -q https://github.com/anchore/grype/releases/download/v0.81.0/grype_0.81.0_linux_$ARCH.deb \
     && sudo dpkg -i grype_0.81.0_linux_$ARCH.deb \
     && rm grype_0.81.0_linux_$ARCH.deb
 
