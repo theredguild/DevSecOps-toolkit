@@ -157,11 +157,9 @@ RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v
 
 
 # Install 2ms
-RUN mkdir 2ms \
-    && cd 2ms \
-    && wget https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
-    && unzip linux-amd64.zip \
-    && sudo ln -s /src/2ms/2ms /usr/local/bin/2ms
+RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip | \
+    funzip - > /usr/local/bin/2ms \
+    && chmod +x /usr/local/bin/2ms
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
