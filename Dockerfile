@@ -175,7 +175,6 @@ RUN pnpm install -g snyk
 
 # Install Grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
-    && rm grype_0.81.0_linux_$ARCH.deb
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
