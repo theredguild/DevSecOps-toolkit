@@ -29,9 +29,9 @@ RUN apt-get update && apt-get install -y \
     zsh \
     pipx \
     sudo \
-    # # Does this make sense with asdf installing nodejs?
-    npm \
+    make \
     vim \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a user group named trg and a user named wanderer with specified UID and GID
@@ -47,35 +47,46 @@ RUN usermod -aG sudo $USERNAME
 # Switch to the new user
 USER $USERNAME
 
+# Explicitly setting user home
+ENV HOME="/home/wanderer"
+
 # Set the default shell to zsh
 ENV SHELL=/usr/bin/zsh
 
 # Running everything under zsh
 SHELL ["/usr/bin/zsh", "-c"]
 
-RUN git clone https://github.com/asdf-vm/asdf.git $HOME/.asdf --branch v0.14.1 \
-    && echo '. $HOME/.asdf/asdf.sh' >> $HOME/.zshrc \
+# Set the prompt
+RUN echo "autoload -U colors && colors" >> $HOME/.zshrc
+RUN echo 'export "PS1=%F{green}%n@%m %F{blue}%1~ %F{yellow}➜ %f "' >> $HOME/.zshrc
+
+# Building everything inside /src
+WORKDIR /src
+
+ENV ASDF_DIR="$HOME/.asdf"
+RUN git clone https://github.com/asdf-vm/asdf.git $ASDF_DIR --branch v0.14.1
+RUN echo '. $ASDF_DIR/asdf.sh' >> $HOME/.zshrc \
     && echo 'fpath=(${ASDF_DIR}/completions $fpath)' >> $HOME/.zshrc \
     && echo 'autoload -Uz compinit && compinit' >> $HOME/.zshrc \
-    && . $HOME/.asdf/asdf.sh 
+    && . $ASDF_DIR/asdf.sh 
+
+ENV PATH="${ASDF_DIR}/bin:${ASDF_DIR}/shims:$PATH"
 
 # Install Node.js and Go using asdf
-RUN . $HOME/.asdf/asdf.sh \
+RUN . $ASDF_DIR/asdf.sh \
     && asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git \
     && asdf install nodejs latest \
-    && asdf global nodejs latest \
-    && sudo npm install -g pnpm
+    && asdf global nodejs latest
 
-RUN . $HOME/.asdf/asdf.sh \
+RUN . $ASDF_DIR/asdf.sh \
     && asdf plugin add golang https://github.com/asdf-community/asdf-golang.git \
     && asdf install golang latest \
     && asdf global golang latest
 
 # # Install pnpm using npm installed via asdf Node.js
-# RUN sudo npm install -g pnpm
-
+RUN npm install -g pnpm
 ENV PNPM_HOME="/home/${USERNAME}/.local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PNPM_HOME/global/node_modules/.bin:${PATH}"
+ENV PATH="${PNPM_HOME}:${PNPM_HOME}/global/node_modules/.bin:${PATH}"
 
 # Install ESLint and plugins using pnpm
 RUN pnpm install -g eslint \
@@ -91,31 +102,49 @@ RUN pnpm install -g node-version-audit \
 
 # Set GOBIN to /usr/local/bin for Go binaries
 ENV GOBIN=/usr/local/bin
+ENV PATH="${GOBIN}:${PATH}"
 
 # Install gitxray
 RUN . $HOME/.asdf/asdf.sh \
     go install github.com/kulkansecurity/gitxray@latest
 
 # Install git-secrets
-RUN git clone https://github.com/awslabs/git-secrets.git $HOME/secrets \
-    && cd $HOME/secrets \
+RUN git clone https://github.com/awslabs/git-secrets.git git-secrets
+RUN cd git-secrets \
     && sudo make install \
-    && rm -rf $HOME/secrets
+    && rm -rf secrets
 
 # Install detect-secrets
 RUN pipx install detect-secrets
 
-# Install pmapper
-RUN pipx install pmapper
+# Install gitleaks
+RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
+    && cd gitleaks \
+    && make build
+
+# Install gitxray
+RUN pipx install gitxray
 
 # Install gh-fake-analyzer
-RUN cd $HOME \
-    && git clone https://github.com/shortdoom/gh-fake-analyzer.git \
-    && cd gh-fake-analyzer \
+RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git
+RUN cd gh-fake-analyzer \
+    && mv .env.example .env \
     && python3 -m venv gfa \
     && source gfa/bin/activate \
     && pip install -r requirements.txt \
     && exit
+
+
+# Create a script to run the gh-fake-analyzer
+USER root
+RUN echo '#!/bin/zsh\n\
+source /src/gh-fake-analyzer/gfa/bin/activate\n\
+python3 /src/gh-fake-analyzer/analyze.py "$@"\n\
+deactivate' > /usr/local/bin/gh-fake-analyzer \
+    && chmod +x /usr/local/bin/gh-fake-analyzer \
+    && chown -R wanderer:trg /usr/local/bin/gh-fake-analyzer
+
+USER wanderer
 
 # Install Trivy
 RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null \
@@ -126,9 +155,21 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
 RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
     sudo tar -xzf - trufflehog -C /usr/local/bin
 
+
+# Install 2ms
+RUN mkdir 2ms \
+    && cd 2ms \
+    && wget https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
+    && unzip linux-amd64.zip \
+    && sudo ln -s /src/2ms/2ms /usr/local/bin/2ms
+
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
 
+# Configure MOTD
+COPY --link --chown=root:root motd /etc/motd
+RUN echo '\ncat /etc/motd\n' >> ~/.zshrc
+
 # Set working directory
 WORKDIR /home/${USERNAME}
-CMD ["/bin/bash"]
+CMD ["/bin/zsh"]
