@@ -161,6 +161,10 @@ RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-a
     funzip - > /usr/local/bin/2ms \
     && chmod +x /usr/local/bin/2ms
 
+# Install clair
+RUN wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+    && chmod +x /usr/local/bin/clair
+
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
 
