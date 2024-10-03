@@ -157,26 +157,26 @@ RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v
 
 # Install 2ms
 RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip | \
-    funzip - > /usr/local/bin/2ms \
-    && chmod +x /usr/local/bin/2ms
+    funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
+    && sudo chmod +x /usr/local/bin/2ms
 
 # Install clair
-RUN wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
-    && chmod +x /usr/local/bin/clair
+RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+    && sudo chmod +x /usr/local/bin/clair
 
 # Install snyk
 RUN ARCH=$(dpkg --print-architecture) \
     && if [ "$ARCH" = "amd64" ]; then \
-    wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux; \
+    sudo wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux; \
     elif [ "$ARCH" = "arm64" ]; then \
-    wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux-arm64; \
+    sudo wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux-arm64; \
     fi \
-    && chmod +x /usr/local/bin/snyk
+    && sudo chmod +x /usr/local/bin/snyk
 
 # Install Grype
 RUN ARCH=$(dpkg --print-architecture) \
     && wget -q https://github.com/anchore/grype/releases/download/v0.81.0/grype_0.81.0_linux_$ARCH.deb \
-    && dpkg -i grype_0.81.0_linux_$ARCH.deb \
+    && sudo dpkg -i grype_0.81.0_linux_$ARCH.deb \
     && rm grype_0.81.0_linux_$ARCH.deb
 
 # Clean up
