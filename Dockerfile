@@ -109,8 +109,8 @@ RUN . $HOME/.asdf/asdf.sh \
     go install github.com/kulkansecurity/gitxray@latest
 
 # Install git-secrets
-RUN git clone https://github.com/awslabs/git-secrets.git git-secrets
-RUN cd git-secrets \
+RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
+    && cd git-secrets \
     && sudo make install \
     && rm -rf secrets
 
@@ -126,8 +126,8 @@ RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
 RUN pipx install gitxray
 
 # Install gh-fake-analyzer
-RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git
-RUN cd gh-fake-analyzer \
+RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git \
+    && cd gh-fake-analyzer \
     && mv .env.example .env \
     && python3 -m venv gfa \
     && source gfa/bin/activate \
@@ -137,6 +137,7 @@ RUN cd gh-fake-analyzer \
 
 # Create a script to run the gh-fake-analyzer
 USER root
+
 RUN echo '#!/bin/zsh\n\
 source /src/gh-fake-analyzer/gfa/bin/activate\n\
 python3 /src/gh-fake-analyzer/analyze.py "$@"\n\
