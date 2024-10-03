@@ -166,12 +166,6 @@ RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/do
 
 # Install snyk
 RUN pnpm install -g snyk
-    && if [ "$ARCH" = "amd64" ]; then \
-    sudo wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux; \
-    elif [ "$ARCH" = "arm64" ]; then \
-    sudo wget -qO /usr/local/bin/snyk https://github.com/snyk/cli/releases/download/v1.1293.1/snyk-linux-arm64; \
-    fi \
-    && sudo chmod +x /usr/local/bin/snyk
 
 # Install Grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
