@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     make \
     vim \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a user group named trg and a user named wanderer with specified UID and GID
@@ -54,6 +55,10 @@ ENV SHELL=/usr/bin/zsh
 
 # Running everything under zsh
 SHELL ["/usr/bin/zsh", "-c"]
+
+# Set the prompt
+RUN echo "autoload -U colors && colors" >> $HOME/.zshrc
+RUN echo 'export "PS1=%F{green}%n@%m %F{blue}%1~ %F{yellow}➜ %f "' >> $HOME/.zshrc
 
 # Building everything inside /src
 WORKDIR /src
@@ -149,6 +154,14 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
 # Install Trufflehog
 RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
     sudo tar -xzf - trufflehog -C /usr/local/bin
+
+
+# Install 2ms
+RUN mkdir 2ms \
+    && cd 2ms \
+    && wget https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
+    && unzip linux-amd64.zip \
+    && sudo ln -s /src/2ms/2ms /usr/local/bin/2ms
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
