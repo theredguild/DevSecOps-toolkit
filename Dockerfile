@@ -158,13 +158,20 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
 RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
     sudo tar -xzf - trufflehog -C /usr/local/bin
 
-
 # Install 2ms
-RUN mkdir 2ms \
-    && cd 2ms \
-    && wget https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
-    && unzip linux-amd64.zip \
-    && sudo ln -s /src/2ms/2ms /usr/local/bin/2ms
+RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip | \
+    funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
+    && sudo chmod +x /usr/local/bin/2ms
+
+# Install clair
+RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+    && sudo chmod +x /usr/local/bin/clair
+
+# Install snyk
+RUN pnpm install -g snyk
+
+# Install Grype
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
