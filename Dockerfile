@@ -58,7 +58,7 @@ SHELL ["/usr/bin/zsh", "-c"]
 
 # Set the prompt
 RUN echo "autoload -U colors && colors" >> $HOME/.zshrc
-RUN echo 'export "PS1=%F{green}%n@%m %F{blue}%1~ %F{yellow}➜ %f "' >> $HOME/.zshrc
+RUN echo 'export PS1="%F{green}%n@%m %F{blue}%1~ %F{yellow}$%f "' >> $HOME/.zshrc
 
 # Building everything inside /src
 WORKDIR /src
@@ -116,6 +116,9 @@ RUN pipx install gitxray
 
 # Install semgrep
 RUN pipx install semgrep
+
+# pipx environment path set
+RUN pipx ensurepath
 
 # Install git-secrets
 RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
