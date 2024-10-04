@@ -185,26 +185,31 @@ RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v
     sudo tar -xzf - trufflehog -C /usr/local/bin
 
 # Install hadolint
-RUN wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 \
-    && chmod +x hadolint-Linux-x86_64 \
-    && sudo mv hadolint-Linux-x86_64 /usr/local/bin/hadolint
+RUN arch=$(dpkg --print-architecture) \
+    && if [ "$arch" = "amd64" ]; then arch="x86_64"; fi \
+    && wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-$arch \
+    && chmod +x hadolint-Linux-$arch \
+    && sudo mv hadolint-Linux-$arch /usr/local/bin/hadolint
+
 
 # Install grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
 # Install dependency-check
 RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt) \
-    && curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPCHECK_VERSION}/dependency-check-${DEPCHECK_VERSION}-release.zip" --output dependency-check.zip \
+    && curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPCHECK_VERSION}/dependency-check-${DEPCHECK_VERSION}-release.zip" \
+    --output dependency-check.zip \
     && unzip dependency-check.zip \
     && chmod +x dependency-check/bin/dependency-check.sh \
     && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
 
+
 # Install 2ms
 RUN mkdir 2ms \
     && cd 2ms \
-    && wget https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
-    && unzip linux-amd64.zip \
+    && wget -qO- https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
+    | funzip \
     && sudo ln -s /src/2ms/2ms /usr/local/bin/2ms
 
 # Clean up
