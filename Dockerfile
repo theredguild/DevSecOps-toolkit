@@ -203,14 +203,17 @@ RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/curr
     && chmod +x dependency-check/bin/dependency-check.sh \
     && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
-
-
 # Install 2ms
-RUN mkdir 2ms \
-    && cd 2ms \
-    && wget -qO- https://github.com/checkmarx/2ms/releases/latest/download/linux-amd64.zip \
-    | funzip \
-    && sudo ln -s /src/2ms/2ms /usr/local/bin/2ms
+RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-$(dpkg --print-architecture).zip | \
+    funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
+    && sudo chmod +x /usr/local/bin/2ms
+
+# Install clair
+RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+    && sudo chmod +x /usr/local/bin/clair
+
+# Install Grype
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
 # Clean up
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*

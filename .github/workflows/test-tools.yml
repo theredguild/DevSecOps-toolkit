@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - Dockerfile
   pull_request:
     branches:
       - main
+      - develop
     paths:
       - Dockerfile
 
