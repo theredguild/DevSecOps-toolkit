@@ -61,9 +61,9 @@ Examples:
 
 - [ ] Container and/or cloud specific:
     - [ ] kube-bench: Checks whether Kubernetes is deployed according to security best practices as defined in the CIS Kubernetes Benchmark. (https://github.com/aquasecurity/kube-bench)
-    - [ ] checkov: Prevent cloud misconfigurations and find vulnerabilities during build-time in infrastructure as code, container images and open source packages. (https://github.com/bridgecrewio/checkov)
+    - [x] checkov: Prevent cloud misconfigurations and find vulnerabilities during build-time in infrastructure as code, container images and open source packages. (https://github.com/bridgecrewio/checkov)
     - [ ] scoutsuite: Multi-Cloud Security Auditing Tool. (https://github.com/nccgroup/ScoutSuite)
-    - [ ] pmapper: A tool for quickly evaluating IAM permissions in AWS. (https://github.com/nccgroup/PMapper)
+    - [x] pmapper: A tool for quickly evaluating IAM permissions in AWS. (https://github.com/nccgroup/PMapper)
     - [x] hadolint: Dockerfile linter. (https://github.com/hadolint/hadolint)
 
 - [x] Dependency & lib checkers:

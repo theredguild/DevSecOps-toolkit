@@ -127,6 +127,15 @@ RUN pipx install semgrep
 # Install nodejsscan
 RUN pipx install nodejsscan
 
+# Install principalmapper
+RUN pipx install principalmapper
+
+# Install checkov
+RUN pipx install checkov
+
+# Install scoutsuite
+RUN pipx install scoutsuite
+
 # pipx environment path set
 RUN pipx ensurepath
 
