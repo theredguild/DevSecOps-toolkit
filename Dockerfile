@@ -217,9 +217,9 @@ RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-$
     funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
     && sudo chmod +x /usr/local/bin/2ms
 
-# Install clair
-RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
-    && sudo chmod +x /usr/local/bin/clair
+# # Install clair
+# RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+#     && sudo chmod +x /usr/local/bin/clair
 
 # Install Grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
