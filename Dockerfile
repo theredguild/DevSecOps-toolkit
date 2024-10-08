@@ -148,7 +148,8 @@ RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
 # Install gitleaks
 RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
     && cd gitleaks \
-    && make build
+    && make build \
+    && sudo ln -s /src/gitleaks/gitleaks /usr/local/bin
 
 # Install gh-fake-analyzer
 # from mattareal until upstream gets patched
