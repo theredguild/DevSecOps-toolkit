@@ -151,9 +151,9 @@ RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
     && make build
 
 # Install gh-fake-analyzer
-RUN git clone https://github.com/shortdoom/gh-fake-analyzer.git \
+# from mattareal until upstream gets patched
+RUN git clone https://github.com/mattaereal/gh-fake-analyzer.git \
     && cd gh-fake-analyzer \
-    && mv .env.example .env \
     && python3 -m venv gfa \
     && source gfa/bin/activate \
     && pip install -r requirements.txt \
@@ -190,8 +190,7 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
     && sudo apt-get update && sudo apt-get install -y trivy
 
 # Install Trufflehog
-RUN wget -qO - https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.6/trufflehog_3.82.6_linux_$(dpkg --print-architecture).tar.gz | \
-    sudo tar -xzf - trufflehog -C /usr/local/bin
+RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sudo sh -s -- -b /usr/local/bin
 
 # Install hadolint
 RUN arch=$(dpkg --print-architecture) \
@@ -208,7 +207,7 @@ RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh |
 RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt) \
     && curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPCHECK_VERSION}/dependency-check-${DEPCHECK_VERSION}-release.zip" \
     --output dependency-check.zip \
-    && unzip dependency-check.zip \
+    && unzip dependency-check.zip && rm -f dependency-check.zip \
     && chmod +x dependency-check/bin/dependency-check.sh \
     && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
