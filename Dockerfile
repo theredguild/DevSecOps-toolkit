@@ -148,7 +148,8 @@ RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
 # Install gitleaks
 RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
     && cd gitleaks \
-    && make build
+    && make build \
+    && sudo ln -s /src/gitleaks/gitleaks /usr/local/bin
 
 # Install gh-fake-analyzer
 # from mattareal until upstream gets patched
@@ -216,9 +217,9 @@ RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-$
     funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
     && sudo chmod +x /usr/local/bin/2ms
 
-# Install clair
-RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
-    && sudo chmod +x /usr/local/bin/clair
+# # Install clair
+# RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+#     && sudo chmod +x /usr/local/bin/clair
 
 # Install Grype
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
