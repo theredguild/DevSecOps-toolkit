@@ -127,8 +127,8 @@ RUN pipx install semgrep
 # Install nodejsscan
 RUN pipx install nodejsscan
 
-# Install principalmapper
-RUN pipx install principalmapper
+# Install cloudsplaining
+RUN pipx install cloudsplaining
 
 # Install checkov
 RUN pipx install checkov

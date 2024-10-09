@@ -232,7 +232,7 @@ git secrets --scan -r deployment/
 
 For more examples and advanced usage refer to their repository.
 
-### Trufflehog
+## Trufflehog
 
 [GitHub](https://github.com/trufflesecurity/trufflehog) | [Action](https://github.com/marketplace/actions/trufflehog-oss)
 Secrets | Analysis | Various
@@ -506,7 +506,7 @@ To learn more about Semgrep, visit:
 - [Semgrep Playground](https://semgrep.dev/editor) - An online interactive tool for writing and sharing rules.
 - [Semgrep Registry](https://semgrep.dev/explore) - 2,000+ community-driven rules covering security, correctness, and dependency vulnerabilities.
 
-### sast-scan (WIP)
+## sast-scan (WIP)
 
 [GitHub](https://github.com/marksarka/sast-scan)
 Static Analysis | General purpose
@@ -563,7 +563,7 @@ legitify -t <your_token> analyze --org org1,org2 --namespace organization,member
 
 The above command will test organization and member policies against org1 and org2.
 
-## kics
+## KICS
 
 [GitHub](https://github.com/Checkmarx/kics) | [Action](https://github.com/marketplace/actions/kics-github-action) | [Scan](https://kics.checkmarx.net/)
 Scanner | Vulns | Misconfig | IaC
@@ -717,7 +717,7 @@ A static security code scanner for Node.js applications.
 nodejssscan -d path/to/nodejs/project/
 ```
 
-## lavamoat
+## Lavamoat
 
 [GitHub](https://github.com/LavaMoat/lavamoat)
 Framework | Dependency | NodeJS
