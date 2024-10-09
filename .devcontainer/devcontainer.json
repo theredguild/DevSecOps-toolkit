@@ -1,9 +1,9 @@
 {
     "name": "OSS Security Tools",
-    
-    "build": {
-        "dockerfile": "../Dockerfile"
-    },
+    "dockerComposeFile": "../compose.yml",
+    "service": "toolbox",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
 
     "features": {
     },
