@@ -170,7 +170,8 @@ RUN git clone https://github.com/Checkmarx/kics.git \
     && cd kics \
     && go mod vendor \
     && go build -o ./bin/kics cmd/console/main.go \
-    && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics
+    && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics \
+    && echo 'export KICS_QUERIES_PATH=/src/kics/assets/queries' >> ~/.zshrc
 
 # Create a script to run the gh-fake-analyzer
 USER root
