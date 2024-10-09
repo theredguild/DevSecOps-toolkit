@@ -1,4 +1,4 @@
-# container-sec-tools
+# Container OSS DevOps Security Tools
 Unified repository with OSS security tools, just `make exec` and dive into the container!
 
 There are some tools that have not been integrated to the container itself, given their nature. For
@@ -130,9 +130,10 @@ Except for Hadolint all tools are being installed from their latest releases.
 
 # How to use the tools inside
 
-## OSINT and Forensics for GitHub
-### gitxray
+## GitXray
 [GitHub](https://github.com/kulkansecurity/gitxray) | [Website](https://www.gitxray.com/)
+OSINT | Forensics | GitHub
+
 Gitxray (short for Git X-Ray) is a multifaceted security tool designed for use on GitHub
 repositories. It can serve many purposes, including OSINT and Forensics. `gitxray` leverages public
 GitHub REST APIs to gather information that would otherwise be very time-consuming to obtain
@@ -162,12 +163,15 @@ gitxray -r https://github.com/some-org/some-repository -v
 
 Please refer to the Documentation for additional use-cases and introductory information.
 
-#### Documentation
+**Documentation**
 - [https://kulkansecurity.github.io/gitxray/](https://kulkansecurity.github.io/gitxray/)
 - [https://www.gitxray.com/](https://www.gitxray.com/)
 
-### gh-fake-analyzer
+## GitHub fake analyzer
+
 [GitHub](https://github.com/shortdoom/gh-fake-analyzer)
+OSINT | GitHub | Script
+
 Download and analyze profile data for any GitHub user or organization. This reconnaissance tool is designed for the OSINT/security community, enabling the inspection of potential bot, scammer, blackhat, or fake employee accounts for dark patterns (see, Malicious GitHub Accounts)
 
 ```bash
@@ -185,11 +189,12 @@ python monitor.py --username <username> # Monitor single user
 python monitor.py --targets <file> # Monitor multiple usernames
 ```
 
----
-## Find secrets in repositories
 
-### git-secrets
+## git-secrets
+
 [GitHub](https://github.com/awslabs/git-secrets)
+Secrets | git | git-hook
+
 Prevents you from committing passwords and other sensitive information to a git repository. Set up rules, and scan.
 
 Install git-hooks so you can scan before commiting
@@ -227,8 +232,11 @@ git secrets --scan -r deployment/
 
 For more examples and advanced usage refer to their repository.
 
-### trufflehog
+### Trufflehog
+
 [GitHub](https://github.com/trufflesecurity/trufflehog) | [Action](https://github.com/marketplace/actions/trufflehog-oss)
+Secrets | Analysis | Various
+
 
 Find, verify, and analyze leaked credentials.
 
@@ -240,8 +248,11 @@ from git, to s3/gcs buckets; docker images, CIs, and even your filesystem.
 trufflehog --no-update git https://github.com/trufflesecurity/test_keys --only-verified
 ```
 
-### gitleaks
+## Gitleaks
+
 [GitHub](https://github.com/gitleaks/gitleaks) | [Action](https://github.com/gitleaks/gitleaks-action)
+Secrets | git
+
 Gitleaks is a SAST tool for detecting and preventing hardcoded secrets like passwords, API keys, and
 tokens in git repos. Gitleaks is an easy-to-use, all-in-one solution for detecting secrets, past or
 present, in your code.
@@ -270,8 +281,11 @@ Fingerprint: cd5226711335c68be1e720b318b7bc3135a30eb2:cmd/generate/config/rules/
 ```
 
 
-### 2ms
+## 2ms
+
 [GitHub](https://github.com/Checkmarx/2ms) | [Action](https://github.com/Checkmarx/2ms/blob/master/.github/workflows/release.yml) | [Azure](https://learn.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline)
+Secrets | Various
+
 Too many secrets (2ms) is an open source CLI tool, powered by Checkmarx, that enables you to identify sensitive data such as secrets, authentication keys and passwords that are stored in your system in unencrypted text. This tool supports scanning of internal communication platforms (Slack, Discord), content management (Confluence, Paligo) and source code storage locations (Git repo, local directory).
 This application is written in Go language and is based on the framework provided by gitleaks.
 
@@ -294,11 +308,19 @@ The tool checks the content using a series of rules that are designed to identif
 
 For more examples refer to their official documentation.
 
-### detect-secrets
-Yet another tool for detecting secrets. [GitHub](https://github.com/Yelp/detect-secrets)
+## detect-secrets
 
+[GitHub](https://github.com/Yelp/detect-secrets)
+Secrets | Various
 
-#### Quickstart:
+detect-secrets is an aptly named module for (surprise, surprise) detecting secrets within a code base.
+
+However, unlike other similar packages that solely focus on finding secrets, this package is designed with the enterprise client in mind: providing a backwards compatible, systematic means of:
+- Preventing new secrets from entering the code base,
+- Detecting if such preventions are explicitly bypassed, and
+- Providing a checklist of secrets to roll, and migrate off to a more secure storage.
+
+**Quickstart:**
 
 ```bash
 # Create a baseline of potential secrets currently found in your git repository.
@@ -320,9 +342,11 @@ detect-secrets scan --list-all-plugins
 
 For more examples and advanced usage refer to their official documentation.
 
-## Vulnerability scanners
-### trivy
+## Trivy
+
 [GitHub](https://github.com/aquasecurity/trivy) | [Action](https://github.com/aquasecurity/trivy-action) | [VSCode](https://github.com/aquasecurity/trivy-vscode-extension)
+Scanner | Vulns | Secrets | Misconfigs | Code | IaC
+
 Find vulnerabilities, misconfigurations, secrets, SBOM in containers, Kubernetes, code repositories,
 clouds, and more. 
 
@@ -339,8 +363,11 @@ trivy fs --scanners vuln,secret,misconfig myproject/
 trivy k8s --report summary cluster
 ```
 
-### clair (WIP - NOT WORKING)
+## Clair (WIP - NOT WORKING)
+
 [GitHub](https://github.com/quay/clair)
+Static Analysis | Containers
+
 > The documentation for clair is currently incomplete. The provided config.yaml file from their
 > documentation side is not longer being accepted by clair and requires manual modification.
 
@@ -370,8 +397,10 @@ sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/downlo
 && sudo chmod +x /usr/local/bin/clair
 ```
 
-### snyk
+## Snyk
+
 [GitHub](https://github.com/snyk/cli) | [Website](https://snyk.io/)
+Monitor | Scanner | Cloud | IaC
 
 A developer-first, cloud-native security tool to scan and monitor your software development projects
 for security vulnerabilities. Snyk scans multiple content types for security issues:
@@ -402,8 +431,10 @@ And you can even monitor them through their website. For more information, refer
 documentation and examples for each command.
 
 
-### grype
+## Grype
+
 [GitHub](https://github.com/anchore/grype/)
+Scanner | Containers | Fs
 
 A vulnerability scanner for container images and
 filesystems. Easily install the binary to try it out. Works with Syft, the powerful SBOM (software
@@ -430,8 +461,10 @@ grype purl:path/to/purl/file                 read a newline separated file of pu
 ```
 
 
-### falco (WIP)
+## Falco (WIP)
+
 [GitHub](https://github.com/falcosecurity/falco) | [Website](https://falco.org/)
+Monitor | Monitor | Containers
 
 Falco is a cloud native runtime security tool for Linux operating systems. It is designed to detect
 and alert on abnormal behavior and potential security threats in real-time.
@@ -444,10 +477,10 @@ systems.
 Falco comes with its own container. Current instructions on how to run it are incomplete. Come back
 later dear wanderer!
 
----
-## Static analysis
-### semgrep
+## Semgrep
+
 [GitHub](https://github.com/semgrep/semgrep) | [Website](https://semgrep.dev)
+Static Analysis | General purpose
 
 Powerful, customizable lightweight static analysis for many languages. 
 
@@ -464,7 +497,7 @@ Logging into Semgrep gets you access to:
     left and right hand sides are the same (potentially a bug):
     `semgrep -e '$X == $X' --lang=py path/to/src`
 
-#### More information
+**More information**
 
 Semgrep has an entire ecosystem which consists of the following: Code, Supply Chain, Secrets, Appsec Platform, OSS Engine. They provide a range of resources for you to run analysis and scan from vulnerabilities to secrets.
 
@@ -473,8 +506,10 @@ To learn more about Semgrep, visit:
 - [Semgrep Playground](https://semgrep.dev/editor) - An online interactive tool for writing and sharing rules.
 - [Semgrep Registry](https://semgrep.dev/explore) - 2,000+ community-driven rules covering security, correctness, and dependency vulnerabilities.
 
-#### sast-scan (WIP)
+### sast-scan (WIP)
+
 [GitHub](https://github.com/marksarka/sast-scan)
+Static Analysis | General purpose
 
 Scan is a free & Open Source DevSecOps tool for performing static analysis based security testing of
 your applications and its dependencies. CI and Git friendly.
@@ -488,118 +523,304 @@ docker save -o scanslim.tar shiftleft/scan-slim:latest
 docker run --rm -e "WORKSPACE=${PWD}" -v $PWD:/app shiftleft/scan scan --src /app/scanslim.tar -o /app/reports --type docker
 ```
 
----
-## Misconfigurations
+## Legitify
 
-### legitify
 [GitHub](https://github.com/Legit-Labs/legitify) | [Action](https://github.com/marketplace/actions/legitify-analyze)
+Scanner | Misconfig | GitHub | GitLab
 
 Detect and remediate misconfigurations and security risks across all your GitHub and GitLab assets.
 
+```bash
+legitify -t <your_token> analyze
+SCM_TOKEN=<your_token> legitify analyze
+```
 
-### kics
+1. To get the most out of legitify, you need to be an owner of at least one GitHub organization. Otherwise, you can still use the tool if you're an admin of at least one repository inside an organization, in which case you'll be able to see only repository-related policies results.
+2. legitify requires a GitHub personal access token (PAT) to analyze your resources successfully, which can be either provided as an argument (`-t`) or as an environment variable (`SCM_TOKEN`).
+   The PAT needs the following scopes for full analysis:
+
+```
+admin:org, read:enterprise, admin:org_hook, read:org, repo, read:repo_hook
+```
+
+See [Creating a Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for more information.  
+Fine-grained personal access tokens are currently not supported.
+
+
+By default, legitify will check the policies against all your resources (organizations, repositories, members, actions). Archived repositories are skipped.
+
+You can control which resources will be analyzed with command-line flags namespace and org:
+
+- `--namespace (-n)`: will analyze policies that relate to the specified resources
+- `--org`: will limit the analysis to the specified GitHub organizations or GitLab group, excluding archived repositories
+- `--repo`: will limit the analysis to the specified GitHub repositories or GitLab projects
+- `--scm`: specify the source code management platform. Possible values are: `github` or `gitlab`. Defaults to `github`. Please note: when running on GitLab, `--scm gitlab` is required.
+- `--enterprise`: will specify which enterprises should be analyzed. Please note: in order to analyze an enterprise, an enterprise slug must be provided.
+
+```bash
+legitify -t <your_token> analyze --org org1,org2 --namespace organization,member
+```
+
+The above command will test organization and member policies against org1 and org2.
+
+## kics
+
+[GitHub](https://github.com/Checkmarx/kics) | [Action](https://github.com/marketplace/actions/kics-github-action) | [Scan](https://kics.checkmarx.net/)
+Scanner | Vulns | Misconfig | IaC
+
 Find security vulnerabilities, compliance issues, and infrastructure misconfigurations early in the
-development cycle of your infrastructure-as-code. [GitHub](https://github.com/Checkmarx/kics) [Scan
-free](https://kics.checkmarx.net/) up to 4mb repositories.
+development cycle of your infrastructure-as-code.
 
----
-## Container and/or cloud specific
-### kube-bench
-Checks whether Kubernetes is deployed according to security best practices as defined in the CIS
-Kubernetes Benchmark. [GitHub](https://github.com/aquasecurity/kube-bench)
+Using kics out of the box is really easy, just run:
 
-### checkov
-Prevent cloud misconfigurations and find vulnerabilities during build-time in infrastructure as
-code, container images, and open source packages. [GitHub](https://github.com/bridgecrewio/checkov)
+```bash
+kics scan -p path/to/project
+```
 
-### scoutsuite
-Multi-Cloud Security Auditing Tool. [GitHub](https://github.com/nccgroup/ScoutSuite)
+To obtain the best out of this tool, you should go on reading:
+-   [Understand how to configure KICS](configuration-file.md) so you can have a better KICS experience.
+-   [Explore KICS commands](commands.md) to see what you can do with KICS.
+-   [Explore supported platforms](platforms.md) to see which files you can scan with KICS.
+-   [Explore the queries internals](queries.md) for better understanding how KICS works.
+-   [Create a new query](creating-queries.md) to learn how to create your own custom queries.
+-   [Explore the output results format](results.md) and quickly fix the issues detected.
+-   [Contribute](CONTRIBUTING.md) if you want to go the extra mile.
 
-### pmapper
-A tool for quickly evaluating IAM permissions in AWS. [GitHub](https://github.com/nccgroup/PMapper)
+## checkov
 
-### hadolint
-Dockerfile linter. [GitHub](https://github.com/hadolint/hadolint)
+[GitHub](https://github.com/bridgecrewio/checkov)
+Static Analysis | IaC | SCA
 
----
-### Dependency & lib checkers
-### DependencyCheck
+**Checkov** is a static code analysis tool for infrastructure as code (IaC) and also a software composition analysis (SCA) tool for images and open source packages.
+
+It scans cloud infrastructure provisioned using [Terraform](https://terraform.io/), [Terraform plan](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Terraform%20Plan%20Scanning.md), [Cloudformation](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Cloudformation.md), [AWS SAM](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/AWS%20SAM.md), [Kubernetes](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Kubernetes.md), [Helm charts](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Helm.md), [Kustomize](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Kustomize.md), [Dockerfile](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Dockerfile.md),  [Serverless](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Serverless%20Framework.md), [Bicep](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Bicep.md), [OpenAPI](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/OpenAPI.md), [ARM Templates](https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Azure%20ARM%20templates.md), or [OpenTofu](https://opentofu.org/) and detects security and compliance misconfigurations using graph-based scanning.
+
+It performs [Software Composition Analysis (SCA) scanning](docs/7.Scan%20Examples/Sca.md) which is a scan of open source packages and images for Common Vulnerabilities and Exposures (CVEs).
+
+**Configure an input folder or file**
+
+```sh
+checkov --directory /user/path/to/iac/code
+```
+
+Or a specific file or files
+
+```sh
+checkov --file /user/tf/example.tf
+```
+Or
+```sh
+checkov -f /user/cloudformation/example1.yml -f /user/cloudformation/example2.yml
+```
+
+For more examples take a look at the official repository.
+
+
+## ScoutSuite
+
+[GitHub](https://github.com/nccgroup/ScoutSuite)
+Scanner | Risk Analysis | Cloud | Various
+
+Scout Suite is an open source multi-cloud security-auditing tool, which enables security posture assessment of cloud environments. Using the APIs exposed by cloud providers, Scout Suite gathers configuration data for manual inspection and highlights risk areas. Rather than going through dozens of pages on the web consoles, Scout Suite presents a clear view of the attack surface automatically.
+
+Scout Suite was designed by security consultants/auditors. It is meant to provide a point-in-time security-oriented view of the cloud account it was run in. Once the data has been gathered, all usage may be performed offline.
+
+As such, it needs access to each one of the cloud services you want it to take a look.
+
+Usage is really simple once you´ve configured credentials. Refer to the section of the wiki [Configuration and usage](https://github.com/nccgroup/ScoutSuite/wiki).
+
+The command `scout` will return the list of available providers, although **Digital Ocean**` wasn't available to me when I last tried. Nevertheless, you can ask for help using `scout PROVIDER --help`
+
+```bash
+scout aws --help
+# returns help on aws
+scout aws --profile PROFILE
+scout gcp --user-account
+scout azure --cli
+```
+
+
+## Cloudsplaining
+
+[GitHub](https://github.com/salesforce/cloudsplaining) | [ReadTheDocs](https://cloudsplaining.readthedocs.io/en/latest/)
+Scanner | AWS IAM
+
+Cloudsplaining is an AWS IAM Security Assessment tool that identifies violations of least privilege
+and generates a risk-prioritized HTML report.
+
+You must have AWS credentials configured that can be used by the CLI.
+
+You must have the privileges to run `iam:GetAccountAuthorizationDetails`. The `arn:aws:iam::aws:policy/SecurityAudit` policy includes this, as do many others that allow Read access to the IAM Service.
+
+To download the account authorization details, ensure you are authenticated to AWS, then run cloudsplaining's download command:
+
+```bash
+cloudsplaining download
+```
+
+If you prefer to use your `~/.aws/credentials` file instead of environment variables, you can specify the profile name:
+```bash
+cloudsplaining download --profile myprofile
+```
+It will download a JSON file in your current directory that contains your account authorization detail information.
+
+Now that we've downloaded the account authorization file, we can scan all of the AWS IAM policies.
+
+```bash
+cloudsplaining scan --exclusions-file exclusions.yml --input-file examples/files/example.json --output examples/files/
+```
+
+
+## Hadolint
+
+[GitHub](https://github.com/hadolint/hadolint) | [Scan](https://hadolint.github.io/hadolint)
+Static Analysis | Dockerfile
+
+A smarter Dockerfile linter that helps you build [best practice][] Docker images. The linter parses
+the Dockerfile into an AST and performs rules on top of the AST. It stands on the shoulders of
+[ShellCheck][] to lint the Bash code inside `RUN` instructions.
+
+Usage is very simple, to quickstart you can just feed a Dockerfile to it!
+
+```
+wanderer@trg $ hadolint Dockerfile
+Dockerfile:5 DL3009 info: Delete the apt-get lists after installing something
+Dockerfile:8 DL3015 info: Avoid additional packages by specifying `--no-install-recommends`
+Dockerfile:8 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+Dockerfile:8 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+```
+
+
+## DependencyCheck
+
+[GitHub](https://github.com/jeremylong/DependencyCheck)
+Scanner | Dependencies | Generic
+
 OWASP dependency-check is a software composition analysis utility that detects publicly disclosed
-vulnerabilities in application dependencies. [GitHub](https://github.com/jeremylong/DependencyCheck)
+vulnerabilities in application dependencies.
+
+```bash
+dependency-check --out . --scan [path to jar files to be scanned]
+```
+
+**NVD API Key Highly Recommended**
+Dependency-check has moved from using the NVD data-feed to the NVD API. Users of dependency-check are highly encouraged to obtain an NVD API Key; see https://nvd.nist.gov/developers/request-an-api-key Without an NVD API Key dependency-check's updates will be extremely slow. Please see the documentation for the cli, maven, gradle, or ant integrations on how to set the NVD API key.
+
+## nodejsscan
+
+[GitHub](https://github.com/ajinabraham/NodeJsScan)
+Static Analyzer | NodeJS
+
+A static security code scanner for Node.js applications.
+
+```bash
+nodejssscan -d path/to/nodejs/project/
+```
+
+## lavamoat
+
+[GitHub](https://github.com/LavaMoat/lavamoat)
+Framework | Dependency | NodeJS
+
+Tools for sandboxing your dependency graph. 
+
+## NPM JS small packages
 
 ### retirejs
-Scanner detecting the use of JavaScript libraries with known vulnerabilities.
+
 [GitHub](https://github.com/RetireJS/retire.js)
+Scanner | Vulns | JavaScript
+
+Scanner detecting the use of JavaScript libraries with known vulnerabilities.
+
+Just run `retire` inside any project.
 
 ### npm audit
+
+npm (by default)
+Scanner | General purpose
+
 This built-in npm command checks for vulnerabilities in your installed packages.
 
 ### installed-check
-Verifies that installed modules comply with the requirements specified in package.json.
+
 [npm](https://www.npmjs.com/package/installed-check)
 
+Verifies that installed modules comply with the requirements specified in package.json.
+
+
 ### better-npm-audit
-Provides additional features on top of the existing npm audit options.
+
 [npm](https://www.npmjs.com/package/better-npm-audit)
+
+Provides additional features on top of the existing npm audit options.
+
 
 ### eslint-plugin-security
-ESLint rules for Node Security. [npm](https://www.npmjs.com/package/eslint-plugin-security)
+
+[npm](https://www.npmjs.com/package/eslint-plugin-security)
+
+ESLint rules for Node Security. 
 
 ### eslint-plugin-no-unsanitized
-Custom ESLint rule to disallow unsafe innerHTML, outerHTML, insertAdjacentHTML and alike.
+
 [npm](https://www.npmjs.com/package/eslint-plugin-no-unsanitized)
 
+Custom ESLint rule to disallow unsafe innerHTML, outerHTML, insertAdjacentHTML and alike.
+
+
 ### eslint-plugin-no-secrets
-An ESLint plugin to find strings that might be secrets/credentials.
+
 [npm](https://www.npmjs.com/package/eslint-plugin-no-secrets)
 
+An ESLint plugin to find strings that might be secrets/credentials.
+
+
 ### node-version-audit
+
+[npm](https://www.npmjs.com/package/node-version-audit
+
 Node Version Audit is a tool to check Node.js version against a regularly updated list of CVE
 exploits, new releases, and end of life dates.
-[npm](https://www.npmjs.com/package/node-version-audit)
+)
 
 ### yarn-audit-fix
-The missing yarn audit fix. [npm](https://www.npmjs.com/package/yarn-audit-fix)
+
+[npm](https://www.npmjs.com/package/yarn-audit-fix)
+
+The missing yarn audit fix. 
 
 ### better-npm-audit
-Additional features on top of the existing npm audit options.
+
 [npm](https://www.npmjs.com/package/better-npm-audit)
 
-### nodejsscan
-A static security code scanner for Node.js applications.
-[GitHub](https://github.com/ajinabraham/NodeJsScan)
+Additional features on top of the existing npm audit options.
 
-### lavamoat
-Tools for sandboxing your dependency graph. [GitHub](https://github.com/LavaMoat/lavamoat)
-
-## Special cases (more tools)
-In this section we're going to describe a set of tools that for different reasons are not, or cannot
-be included in the repository.
-
----
-## Containers
-snyk, grype and clair also work with containers.
-
-### falco
-https://falco.org/docs/setup/container/
-
-
-## Supply-chain
-### lavamoat
-
----
 ## GitHub actions
+
 ### harden-runner
-Network egress filtering and runtime security for GitHub-hosted and self-hosted runners.
+
 [GitHub](https://github.com/step-security/harden-runner)
 
+Network egress filtering and runtime security for GitHub-hosted and self-hosted runners.
+
 ### secure-repo
-Orchestrate GitHub Actions Security. [GitHub](https://github.com/step-security/secure-repo)
+
+[GitHub](https://github.com/step-security/secure-repo)
+
+Orchestrate GitHub Actions Security. 
+
 
 ### wait-for-secrets
-2fa for GHA. [GitHub](https://github.com/step-security/wait-for-secrets)
 
-### generic
-A set of GitHub actions for checking your projects for vulnerabilities.
+[GitHub](https://github.com/step-security/wait-for-secrets)
+
+2fa for GHA. 
+
+### Snyk Actions
+
 [GitHub](https://github.com/snyk/actions)
+
+A set of GitHub actions for checking your projects for vulnerabilities.
+
 
