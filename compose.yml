@@ -18,6 +18,25 @@ services:
       - toolbox-net
     command: zsh
 
+  falco:
+    extends:
+      file: falco-compose.yml
+      service: falco
+  falco-sidekick:
+    extends:
+      file: falco-compose.yml
+      service: falco-sidekick
+  falco-webui:
+    extends:
+      file: falco-compose.yml
+      service: falco-webui
+    ports:
+      - "2802:2802"
+  falco-redis:
+    extends:
+      file: falco-compose.yml
+      service: falco-redis
+
 volumes:
   pipx-packages:
 
