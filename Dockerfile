@@ -29,12 +29,14 @@ RUN apt-get update && apt-get install -y \
     zsh \
     pipx \
     sudo \
+    gosu \
     make \
     vim \
     unzip \
     default-jre \
     yarn \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && gosu nobody true
 
 # Create a user group named trg and a user named wanderer with specified UID and GID
 RUN groupadd --gid $USER_GID $GROUPNAME && \
@@ -143,7 +145,7 @@ RUN pipx ensurepath
 # Install git-secrets
 RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
     && cd git-secrets \
-    && sudo make install \
+    && gosu root make install \
     && rm -rf secrets
 
 # Install gitleaks
@@ -164,14 +166,14 @@ RUN git clone https://github.com/mattaereal/gh-fake-analyzer.git \
 RUN git clone https://github.com/Legit-Labs/legitify \
     && cd legitify \
     && go build \
-    && sudo ln -s /src/legitify/legitify /usr/local/bin/legitify
+    && gosu root ln -s /src/legitify/legitify /usr/local/bin/legitify
 
 # Install kics
 RUN git clone https://github.com/Checkmarx/kics.git \
     && cd kics \
     && go mod vendor \
     && go build -o ./bin/kics cmd/console/main.go \
-    && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics \
+    && gosu root ln -s /src/kics/bin/kics /usr/local/bin/kics \
     && echo 'export KICS_QUERIES_PATH=/src/kics/assets/queries' >> ~/.zshrc
 
 # Create a script to run the gh-fake-analyzer
@@ -187,9 +189,9 @@ deactivate' > /usr/local/bin/gh-fake-analyzer \
 USER wanderer
 
 # Install Trivy
-RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null \
-    && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list \
-    && sudo apt-get update && sudo apt-get install -y trivy
+RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | gosu root tee /usr/share/keyrings/trivy.gpg > /dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | gosu root tee -a /etc/apt/sources.list.d/trivy.list \
+    && gosu root apt-get update && gosu root apt-get install -y trivy
 
 # Install Trufflehog
 RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
@@ -199,11 +201,11 @@ RUN arch=$(dpkg --print-architecture) \
     && if [ "$arch" = "amd64" ]; then arch="x86_64"; fi \
     && wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-$arch \
     && chmod +x hadolint-Linux-$arch \
-    && sudo mv hadolint-Linux-$arch /usr/local/bin/hadolint
+    && gosu root mv hadolint-Linux-$arch /usr/local/bin/hadolint
 
 
 # Install grype
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | gosu root sh -s -- -b /usr/local/bin
 
 # Install dependency-check
 RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt) \
@@ -211,22 +213,22 @@ RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/curr
     --output dependency-check.zip \
     && unzip dependency-check.zip && rm -f dependency-check.zip \
     && chmod +x dependency-check/bin/dependency-check.sh \
-    && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
+    && gosu root ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
 # Install 2ms
 RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-$(dpkg --print-architecture).zip | \
-    funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
-    && sudo chmod +x /usr/local/bin/2ms
+    funzip - | gosu root tee /usr/local/bin/2ms > /dev/null \
+    && gosu root chmod +x /usr/local/bin/2ms
 
 # Install clair
-RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
-    && sudo chmod +x /usr/local/bin/clair
+RUN gosu root wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-$(dpkg --print-architecture) \
+    && gosu root chmod +x /usr/local/bin/clair
 
 # Install Grype
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | gosu root sh -s -- -b /usr/local/bin
 
 # Clean up
-RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
+RUN gosu root apt-get clean && gosu root rm -rf /var/lib/apt/lists/*
 
 # Configure MOTD
 COPY --link --chown=root:root motd /etc/motd
