@@ -697,130 +697,326 @@ Dockerfile:8 DL3059 info: Multiple consecutive `RUN` instructions. Consider cons
 Scanner | Dependencies | Generic
 
 OWASP dependency-check is a software composition analysis utility that detects publicly disclosed
-vulnerabilities in application dependencies.
+vulnerabilities in application dependencies.Requires access to several externally hosted resources.
+For more information.
+
+**Build Tools**
+
+In order to analyze some technology stacks dependency-check may require other
+development tools to be installed. Some of the analysis listed below may be
+experimental and require the experimental analyzers to be enabled.
+
+1. To analyze .NET Assemblies the dotnet 8 run time or SDK must be installed.
+   - Assemblies targeting other run times can be analyzed - but 8 is required to run the analysis.
+2. If analyzing GoLang projects `go` must be installed.
+3. The analysis of `Elixir` projects requires `mix_audit`.
+4. The analysis of `npm`, `pnpm`, and `yarn` projects requires `npm`, `pnpm`, or `yarn` to be
+   installed. The analysis performed utilize the respective `audit` feature of each. It also uses
+   RetireJS.
+5. The analysis of Ruby is a wrapper around `bundle-audit`, which must be installed.
+
+Currently, only analysis 2 and 4 have been prioritized given the nature of the repo.
 
 ```bash
-dependency-check --out . --scan [path to jar files to be scanned]
+dependency-check --out . --scan [path to files to be scanned]
 ```
 
-**NVD API Key Highly Recommended**
-Dependency-check has moved from using the NVD data-feed to the NVD API. Users of dependency-check are highly encouraged to obtain an NVD API Key; see https://nvd.nist.gov/developers/request-an-api-key Without an NVD API Key dependency-check's updates will be extremely slow. Please see the documentation for the cli, maven, gradle, or ant integrations on how to set the NVD API key.
+The documentation suggests you obtain an NVD API Key from
+[NIST](https://nvd.nist.gov/developers/request-an-api-key) in order to download the database faster.
+You can do that if you want, otherwise you'll have to wait a little.
+
 
 ## nodejsscan
 
 [GitHub](https://github.com/ajinabraham/NodeJsScan)
 Static Analyzer | NodeJS
 
-A static security code scanner for Node.js applications.
+Static security code scanner (SAST) for Node.js applications powered by
+[libsast](https://github.com/ajinabraham/libsast) and
+[semgrep](https://github.com/returntocorp/semgrep).
+
+**Quickstart**
 
 ```bash
 nodejssscan -d path/to/nodejs/project/
 ```
+
 
 ## Lavamoat
 
 [GitHub](https://github.com/LavaMoat/lavamoat)
 Framework | Dependency | NodeJS
 
-Tools for sandboxing your dependency graph. 
+Tools for sandboxing your dependency graph. This tool works differently, it is not something that
+works "right" out of the box as you would say, not at least compared to the rest of the tools here.
+But it is very effective on preventing supply chain attacks.
 
-## NPM JS small packages
+There's really no quick start. You need to install it on your project directly.
+
+```bash
+pnpm install --save-dev lavamoat
+```
+
+Initialize it.
+
+```bash
+npx lavamoat init
+```
+
+This generates a `lavamoat/node/policy.json` file, which will contain permissions for each
+dependency. You can edit it, and set permissions for each package according to your security needs.
+For example:
+
+```json
+{
+  "resources": {
+    "lodash": {
+      "globals": {
+        "process": true,
+        "console": true
+      },
+      "packages": {
+        "fs": false
+      }
+    }
+  }
+}
+```
+
+In this example, `lodash` is allowed to use `process` and `console` but not `fs` (file system).
+
+Run your project with LavaMoat, which will enforce policies at runtime:
+
+```bash
+npx lavamoat node index.js # index.js or whatever is your entry-point.
+```
+
+When you add new dependencies or update existing ones, to regenerate the policy file with any new dependencies run:
+
+```bash
+npx lavamoat update
+```
+
+Add a script in `package.json` to simplify running LavaMoat:
+
+```json
+"scripts": {
+  "start": "lavamoat node index.js",
+  "lavamoat-init": "lavamoat init",
+  "lavamoat-update": "lavamoat update"
+}
+
+```
+
+Now you can use `npm run start` to run LavaMoat instead of the full command.
+
+Check the LavaMoat documentation for more advanced options, such as:
+
+- Defining custom modules
+- Setting up LavaMoat for browser environments
+- Using sandboxed environments
+
+## NodeJS specific tools
 
 ### retirejs
 
-[GitHub](https://github.com/RetireJS/retire.js)
+[GitHub](https://github.com/RetireJS/retire.js) | [Website](https://retirejs.github.io/retire.js/)
 Scanner | Vulns | JavaScript
 
 Scanner detecting the use of JavaScript libraries with known vulnerabilities.
 
 Just run `retire` inside any project.
 
-### npm audit
-
-npm (by default)
-Scanner | General purpose
-
-This built-in npm command checks for vulnerabilities in your installed packages.
-
 ### installed-check
 
-[npm](https://www.npmjs.com/package/installed-check)
+[npm](https://www.npmjs.com/package/installed-check) | [GitHub](https://github.com/voxpelli/node-installed-check)
+Checker | Modules | NodeJS
 
 Verifies that installed modules comply with the requirements specified in package.json.
 
+By default checks engine ranges, peer dependency ranges and installed versions and, in mono-repos
+using workspaces, by default checks all workspaces as well as the workspace root.
+
+Just run it inside your repo and that's it. Here's an example using
+
+```bash
+# Ignore dev deps, treat warning as errors, and try to fix writing to disk.
+installed-check --ignore-dev --strict --fix
+# equivalent to
+installed-check -d -s --fix 
+```
+
+For more uses, check out the official documentation.
+
 
 ### better-npm-audit
 
-[npm](https://www.npmjs.com/package/better-npm-audit)
+[npm](https://www.npmjs.com/package/better-npm-audit) | [GitHub](https://github.com/jeemok/better-npm-audit)
+Checker | NodeJS
 
 Provides additional features on top of the existing npm audit options.
 
+Just run the command as you'd run `npm audit` inside a project.
+
+```bash
+better-npm-audit audit
+```
+
+Better yet, replace audit with this script so you can run it with `npm audit` instead:
+
+```json
+"scripts": {
+  "prepush": "npm run test && npm run audit",
+  "audit": "better-npm-audit audit"
+}
+```
 
 ### eslint-plugin-security
 
-[npm](https://www.npmjs.com/package/eslint-plugin-security)
+[npm](https://www.npmjs.com/package/eslint-plugin-security) | [GitHub](https://github.com/eslint-community/eslint-plugin-security)
+Plugin | NodeJS
 
-ESLint rules for Node Security. 
+ESLint rules for Node Security. This project will help identify potential security hotspots, but finds a lot of false positives which need triage by a human. It also has TypeScript suppport.
+
+```bash
+npm install --save-dev eslint-plugin-security
+# or
+yarn add --dev eslint-plugin-security
+```
+
+**Flat config** (requires eslint >= v8.23.0)
+Add the following to your eslint.config.js file:
+
+```js
+const pluginSecurity = require('eslint-plugin-security');
+
+module.exports = [pluginSecurity.configs.recommended];
+
+```
+
+For eslintrc config, and more, checkout their github.
 
 ### eslint-plugin-no-unsanitized
 
-[npm](https://www.npmjs.com/package/eslint-plugin-no-unsanitized)
+[npm](https://www.npmjs.com/package/eslint-plugin-no-unsanitized) | [GitHub](https://github.com/mozilla/eslint-plugin-no-unsanitized/issues)
+Plugin | NodeJS
 
 Custom ESLint rule to disallow unsafe innerHTML, outerHTML, insertAdjacentHTML and alike.
 
+```bash
+yarn add -D eslint-plugin-no-unsanitized
+npm install --save-dev eslint-plugin-no-unsanitized
+```
+
+**Flat config**
+
+```js
+import nounsanitized from "eslint-plugin-no-unsanitized";
+
+export default config = [nounsanitized.configs.recommended];
+```
+
+For eslintrc config, and rules selection, checkout their github.
 
 ### eslint-plugin-no-secrets
 
-[npm](https://www.npmjs.com/package/eslint-plugin-no-secrets)
+[npm](https://www.npmjs.com/package/eslint-plugin-no-secrets) | [GitHub](https://github.com/nickdeis/eslint-plugin-no-secrets)
+Plugin | NodeJS
 
 An ESLint plugin to find strings that might be secrets/credentials.
 
+**Flat config**
+
+```js
+import noSecrets from "eslint-plugin-no-secrets";
+
+export default [
+  {
+    files: ["**/*.js"],
+    plugins: {
+      "no-secrets": noSecrets,
+    },
+    rules: {
+      "no-secrets/no-secrets": "error",
+    },
+  },
+];
+```
+
+Refer to the documentation to decrease the tolerance for entropy, and add patterns to check for
+certain token formats.
 
 ### node-version-audit
 
-[npm](https://www.npmjs.com/package/node-version-audit
+[npm](https://www.npmjs.com/package/node-version-audit) | [GitHub](https://github.com/lightswitch05/node-version-audit)
+Checker | NodeJS
+
 
 Node Version Audit is a tool to check Node.js version against a regularly updated list of CVE
 exploits, new releases, and end of life dates.
-)
+
+```bash
+node-version-audit --fail-security
+```
+
+Check their documentation for more options, or just append `--help`.
 
 ### yarn-audit-fix
 
-[npm](https://www.npmjs.com/package/yarn-audit-fix)
+[npm](https://www.npmjs.com/package/yarn-audit-fix) | [GitHub](https://github.com/antongolub/yarn-audit-fix)
+audit | NodeJS
 
-The missing yarn audit fix. 
+The missing yarn audit fix.
 
-### better-npm-audit
+```bash
+yarn-audit-fix --opts
+```
 
-[npm](https://www.npmjs.com/package/better-npm-audit)
-
-Additional features on top of the existing npm audit options.
+For a better understanding of the options, checkout their repo.
 
 ## GitHub actions
 
+### Secure measures for your repo
+
+[GitHub](https://github.com/step-security/secure-repo) | [Live](https://app.stepsecurity.io/)
+List | Measures
+
+Orchestrate GitHub Actions Security. A catalog of fixes and proactive measures to harden you repository. Creators of the harden-runner below.
+
 ### harden-runner
 
-[GitHub](https://github.com/step-security/harden-runner)
+[GitHub](https://github.com/step-security/harden-runner) | [Action](https://github.com/marketplace/actions/harden-runner)
+Runners | Multi-purpose
 
 Network egress filtering and runtime security for GitHub-hosted and self-hosted runners.
 
-### secure-repo
+There are two main threats from compromised workflows, dependencies, and build tools in a CI/CD environment:
 
-[GitHub](https://github.com/step-security/secure-repo)
+- Exfiltration of CI/CD credentials and source code
+- Tampering of source code, dependencies, or artifacts during the build to inject a backdoor
 
-Orchestrate GitHub Actions Security. 
+Harden-Runner monitors process, file, and network activity to:
 
+|     | Countermeasure                                                                                                                                                    | Prevent Security Breach                                                                                                                                                                                                                                                                                                                                       |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.  | Monitor and block outbound network traffic at the DNS, HTTPS (Layer 7), and network layers (Layers 3 and 4) to prevent exfiltration of code and CI/CD credentials | To prevent the [Codecov breach](https://github.com/step-security/github-actions-goat/blob/main/docs/Vulnerabilities/ExfiltratingCICDSecrets.md) scenario                                                                                                                                                                                                      |
+| 2.  | Detect if source code is being tampered during the build process to inject a backdoor                                                                             | To detect the [XZ Utils](https://www.stepsecurity.io/blog/analysis-of-backdoored-xz-utils-build-process-with-harden-runner) and [SolarWinds incident](https://github.com/step-security/github-actions-goat/blob/main/docs/Vulnerabilities/TamperingDuringBuild.md) scenarios                                                                                  |
+| 3.  | Detect poisoned workflows and compromised dependencies that exhibit suspicious behavior                                                                           | To detect [Dependency confusion](https://github.com/step-security/github-actions-goat/blob/main/docs/Vulnerabilities/ExfiltratingCICDSecrets.md#dependency-confusion-attacks) and [Malicious dependencies](https://github.com/step-security/github-actions-goat/blob/main/docs/Vulnerabilities/ExfiltratingCICDSecrets.md#compromised-dependencies) scenarios |
+| 4.  | Determine minimum GITHUB_TOKEN permissions by monitoring HTTPS calls to GitHub APIs                                                                               | To set [minimum GITHUB_TOKEN permissions](https://www.stepsecurity.io/blog/determine-minimum-github-token-permissions-using-ebpf-with-stepsecurity-harden-runner) to reduce the impact of exfiltration                                                                                                                                                                                                                                                                                  |
 
 ### wait-for-secrets
 
-[GitHub](https://github.com/step-security/wait-for-secrets)
+[GitHub](https://github.com/step-security/wait-for-secrets) | [Action](https://github.com/marketplace/actions/wait-for-secrets)
+Access control | MFA
 
-2fa for GHA. 
+Publish from GitHub Actions using multi-factor authentication. It's like 2fa for GHA.
 
 ### Snyk Actions
 
-[GitHub](https://github.com/snyk/actions)
+[GitHub](https://github.com/snyk/actions) | [Action](https://github.com/marketplace/actions/snyk)
+Checker | Vulns | Code
 
-A set of GitHub actions for checking your projects for vulnerabilities.
+A set of GitHub Action for using Snyk to check for vulnerabilities in your GitHub projects. A
+different action is required depending on which language or build tool you are using.
 
 
