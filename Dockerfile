@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     unzip \
     default-jre \
+    yanr \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a user group named trg and a user named wanderer with specified UID and GID
