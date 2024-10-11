@@ -2,8 +2,8 @@
 
 Unified repository with OSS security tools, just `make exec` and dive into the container!
 
-There are some tools that have not been integrated to the container itself, given their nature. For
-those special cases, we have a separated section below.
+There are some tools that have not been integrated to the main container itself, given their nature,
+but have been or will be added to the repository with an explanation on how to run them separately.
 
 ## Firing up the container
 
@@ -23,6 +23,8 @@ Examples:
   make exec
   make clean
 ```
+
+## Go to [how to use the tools inside](./HOWTO.md) to understand how each one of them actually work.
 
 ## Tools included in this container
 
