@@ -440,6 +440,19 @@ To learn more about Semgrep, visit:
 - [Semgrep Registry](https://semgrep.dev/explore) - 2,000+ community-driven rules covering security,
   correctness, and dependency vulnerabilities.
 
+**Rulesets** for you to run more specific actions:
+
+```bash
+# Security checks for docker-compose configuration files.
+semgrep --config "p/docker-compose"
+# Selected rules from Hadolint, a Dockerfile linter, rewritten in Semgrep
+semgrep --config "p/dockerfile"
+# Security checks for kubernetes configuration files.
+semgrep --config "p/kubernetes"
+# Universal linter to identify vulnerabilities in your code base with the flawfinder rule pack
+semgrep --config "p/flawfinder"
+```
+
 ## sast-scan (WIP) | Static analysis with many many tools
 
 [GitHub](https://github.com/marksarka/sast-scan)
@@ -1007,7 +1020,6 @@ Scan | Secrets
 
 [Action](https://github.com/marketplace/actions/trufflehog-oss)
 Scan | Secrets
-
 
 ## Online version of some tools
 

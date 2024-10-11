@@ -96,8 +96,7 @@ Except for Hadolint all tools are being installed from their latest releases.
       infrastructure as code, container images and open source packages.
       (<https://github.com/bridgecrewio/checkov>)
   - [x] scoutsuite: Multi-Cloud Security Auditing Tool. (<https://github.com/nccgroup/ScoutSuite>)
-  - [x] pmapper: A tool for quickly evaluating IAM permissions in AWS.
-      (<https://github.com/nccgroup/PMapper>)
+  - [x] Cloudsplaining: AWS IAM assessment tool (<https://github.com/salesforce/cloudsplaining>)
   - [x] hadolint: Dockerfile linter. (<https://github.com/hadolint/hadolint>)
 
 - [x] Dependency & lib checkers:
