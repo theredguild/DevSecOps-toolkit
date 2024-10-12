@@ -12,6 +12,8 @@ services:
       USER_GID: 1000
       HOME: /home/wanderer
       PATH: /home/wanderer/.local/bin:/usr/local/bin:$PATH
+      CLAIR_CONF: /workspace/clair_config/local-dev/clair/config.yaml
+      CLAIR_API: http://clair-traefik:6060
     tty: true
     stdin_open: true
     networks:
