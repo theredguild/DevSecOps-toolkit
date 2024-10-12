@@ -37,6 +37,26 @@ services:
       file: falco-compose.yml
       service: falco-redis
 
+  clair-indexer:
+    extends:
+      file: clair-compose.yml
+      service: clair-indexer
+
+  clair-matcher:
+    extends:
+      file: clair-compose.yml
+      service: clair-matcher
+
+  clair-database:
+    extends:
+      file: clair-compose.yml
+      service: clair-database
+
+  clair-traefik:
+    extends:
+      file: clair-compose.yml
+      service: clair-traefik
+
 volumes:
   pipx-packages:
 

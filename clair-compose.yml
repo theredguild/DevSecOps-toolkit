@@ -1,0 +1,75 @@
+---
+version: "3.7"
+# This is just to hold a bunch of yaml anchors and try to consolidate parts of
+# the config.
+x-anchors:
+  postgres: &postgres-image docker.io/library/postgres:12
+  traefik: &traefik-image docker.io/library/traefik:v2.2
+  clair: &clair-image quay.io/projectquay/clair:4.8.0
+
+services:
+  clair-indexer:
+    image: *clair-image
+    container_name: clair-indexer
+    depends_on:
+      clair-database:
+        condition: service_healthy
+    environment:
+      CLAIR_MODE: "indexer"
+    volumes:
+      - "./clair_config/local-dev/clair:/config:ro"
+    networks:
+      - toolbox-net
+
+  clair-matcher:
+    image: *clair-image
+    container_name: clair-matcher
+    depends_on:
+      clair-database:
+        condition: service_healthy
+    environment:
+      CLAIR_MODE: "matcher"
+    volumes:
+      - "./clair_config/local-dev/clair:/config:ro"
+    networks:
+      - toolbox-net
+
+  clair-database:
+    container_name: clair-database
+    image: *postgres-image
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - type: bind
+        source: ./clair_config/local-dev/clair/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "pg_isready -U postgres"
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 10s
+    networks:
+      - toolbox-net
+
+  clair-traefik:
+    container_name: clair-traefik
+    image: *traefik-image
+    depends_on:
+      - clair-matcher
+      - clair-indexer
+    ports:
+      - '6060:6060'
+      - '8080:8080'
+      - '8443'
+      - '5432'
+    volumes:
+      - './clair_config/local-dev/traefik/:/etc/traefik/:ro'
+    networks:
+      - toolbox-net
+
+networks:
+  toolbox-net:
+    external: true
