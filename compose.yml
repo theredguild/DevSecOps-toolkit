@@ -1,0 +1,67 @@
+services:
+  toolbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - pipx-packages:/home/wanderer/.local/pipx/venvs
+    environment:
+      USERNAME: wanderer
+      USER_UID: 1000
+      USER_GID: 1000
+      HOME: /home/wanderer
+      PATH: /home/wanderer/.local/bin:/usr/local/bin:$PATH
+      CLAIR_CONF: /workspace/clair_config/local-dev/clair/config.yaml
+      CLAIR_API: http://clair-traefik:6060
+    tty: true
+    stdin_open: true
+    networks:
+      - toolbox-net
+    command: zsh
+
+  falco:
+    extends:
+      file: falco-compose.yml
+      service: falco
+  falco-sidekick:
+    extends:
+      file: falco-compose.yml
+      service: falco-sidekick
+  falco-webui:
+    extends:
+      file: falco-compose.yml
+      service: falco-webui
+    ports:
+      - "2802:2802"
+  falco-redis:
+    extends:
+      file: falco-compose.yml
+      service: falco-redis
+
+  clair-indexer:
+    extends:
+      file: clair-compose.yml
+      service: clair-indexer
+
+  clair-matcher:
+    extends:
+      file: clair-compose.yml
+      service: clair-matcher
+
+  clair-database:
+    extends:
+      file: clair-compose.yml
+      service: clair-database
+
+  clair-traefik:
+    extends:
+      file: clair-compose.yml
+      service: clair-traefik
+
+volumes:
+  pipx-packages:
+
+networks:
+  toolbox-net:
+    driver: bridge

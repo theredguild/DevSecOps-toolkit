@@ -1,0 +1,45 @@
+services:
+  falco:
+    container_name: falco
+    cap_drop:
+      - all
+    cap_add:
+      - sys_admin
+      - sys_resource
+      - sys_ptrace
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - /proc:/host/proc:ro
+      - /etc:/host/etc:ro
+      - ./falco_config/http_output.yml:/etc/falco/config.d/http_output.yml
+    image: falcosecurity/falco-no-driver:latest
+    networks:
+      - toolbox-net
+
+  falco-sidekick:
+    container_name: falco-sidekick
+    image: falcosecurity/falcosidekick
+    environment:
+      WEBUI_URL: http://falco-webui:2802
+    networks:
+      - toolbox-net
+
+  falco-webui:
+    container_name: falco-webui
+    image: falcosecurity/falcosidekick-ui:2.2.0
+    ports:
+      - 2802:2802
+    depends_on:
+      - falco-redis
+    command: ['-r', 'redis:6379', '-d']
+    networks:
+      - toolbox-net
+
+  falco-redis:
+    image: redis/redis-stack:7.2.0-v11
+    networks:
+      - toolbox-net
+
+networks:
+  toolbox-net:
+    external: true
