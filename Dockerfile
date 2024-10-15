@@ -89,10 +89,6 @@ RUN . $ASDF_DIR/asdf.sh \
 ENV GOBIN=/usr/local/bin
 ENV PATH="${GOBIN}:${PATH}"
 
-# Install gitxray
-RUN . $HOME/.asdf/asdf.sh \
-    go install github.com/kulkansecurity/gitxray@latest
-
 # # Install pnpm using npm installed via asdf Node.js
 RUN npm install -g pnpm
 ENV PNPM_HOME="/home/${USERNAME}/.local/share/pnpm"
@@ -153,13 +149,7 @@ RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
     && sudo ln -s /src/gitleaks/gitleaks /usr/local/bin
 
 # Install gh-fake-analyzer
-# from mattareal until upstream gets patched
-RUN git clone https://github.com/mattaereal/gh-fake-analyzer.git \
-    && cd gh-fake-analyzer \
-    && python3 -m venv gfa \
-    && source gfa/bin/activate \
-    && pip install -r requirements.txt \
-    && exit
+RUN pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git
 
 # Install legitify
 RUN git clone https://github.com/Legit-Labs/legitify \
@@ -174,18 +164,6 @@ RUN git clone https://github.com/Checkmarx/kics.git \
     && go build -o ./bin/kics cmd/console/main.go \
     && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics \
     && echo 'export KICS_QUERIES_PATH=/src/kics/assets/queries' >> ~/.zshrc
-
-# Create a script to run the gh-fake-analyzer
-USER root
-
-RUN echo '#!/bin/zsh\n\
-source /src/gh-fake-analyzer/gfa/bin/activate\n\
-python3 /src/gh-fake-analyzer/analyze.py "$@"\n\
-deactivate' > /usr/local/bin/gh-fake-analyzer \
-    && chmod +x /usr/local/bin/gh-fake-analyzer \
-    && chown -R wanderer:trg /usr/local/bin/gh-fake-analyzer
-
-USER wanderer
 
 # Install Trivy
 RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null \

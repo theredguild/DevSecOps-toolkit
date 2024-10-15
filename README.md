@@ -5,7 +5,7 @@ Unified repository with OSS security tools, just `make exec` and dive into the c
 There are some tools that have not been integrated to the main container itself, given their nature,
 but have been or will be added to the repository with an explanation on how to run them separately.
 
-## Firing up the container
+## Firing up the container (OUTDATED)
 
 ```bash
 % make
@@ -24,11 +24,9 @@ Examples:
   make clean
 ```
 
-## Go to [how to use the tools inside](./HOWTO.md) to understand how each one of them actually work.
+## Go to [how to use the tools inside](./HOWTO.md) to understand how each one of them actually work
 
 ## Tools included in this container
-
-Except for Hadolint all tools are being installed from their latest releases.
 
 - [x] GitHub analysis (fake profiles, OSINT):
   - [x] gitxray: A multifaceted security tool that leverages Public GitHub REST APIs for OSINT,
@@ -50,26 +48,26 @@ Except for Hadolint all tools are being installed from their latest releases.
           systems like CMS, chats and git. (<https://github.com/Checkmarx/2ms>)
     - [x] detect-secrets: yet another one. (<https://github.com/Yelp/detect-secrets>)
 
-- [ ] Vulnerability scanners:
+- [x] Vulnerability scanners:
   - [x] trivy: Find vulnerabilities, misconfigurations, secrets, SBOM in containers, Kubernetes,
       code repositories, clouds and more. (<https://github.com/aquasecurity/trivy>)
-  - [] clair: Vulnerability Static Analysis for Containers. (<https://github.com/quay/clair>)
+  - [x] clair: Vulnerability Static Analysis for Containers. (<https://github.com/quay/clair>)
   - [x] snyk: Snyk CLI scans and monitors your projects for security vulnerabilities.
       (<https://github.com/snyk/cli>)
   - [x] grype: A vulnerability scanner for container images and filesystems.
       (<https://github.com/anchore/grype/>)
   - [x] falco: Cloud Native Runtime Security. (<https://github.com/falcosecurity/falco>)
 
-- [ ] Static analysis:
+- [x] Static analysis:
   - [x] semgrep: Lightweight static analysis for many languages.
       (<https://github.com/semgrep/semgrep>)
     - [x] docker-compose (<https://semgrep.dev/p/docker-compose>)
     - [x] dockerfile (<https://semgrep.dev/p/dockerfile>)
     - [x] kubernetes (<https://semgrep.dev/p/kubernetes>)
     - [x] flawfinder (<https://semgrep.dev/p/flawfinder>)
-  - [ ] sast-scan: Scan is a free & Open Source DevSecOps tool for performing static analysis
+  - [x] ~~sast-scan: Scan is a free & Open Source DevSecOps tool for performing static analysis
       based security testing of your applications and its dependencies. CI and Git friendly.
-      (<https://github.com/marksarka/sast-scan>)
+      (<https://github.com/marksarka/sast-scan>)~~ Momentarily removed.
 
 - [x] Misconfigurations:
   - [x] legitify: Detect and remediate misconfigurations and security risks across all your GitHub

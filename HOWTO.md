@@ -1,5 +1,29 @@
 # How to use the tools inside
 
+We leave you with a rough representative of what do these tools cover, so you get a better grasp on what to use them for.
+
+**Secrets**
+2ms, gitleaks, git-secrets, trufflehog
+
+**GitHub / GitLab**
+gitxray, gh-fake-analyzer, legitify
+
+**Multi-purpose**
+semgrep, trivy, kics
+
+**IaC / SCA / Code**
+checkov, scoutsuite, dependency-check
+
+**Cloud**
+falco, snyk, cloudsplaining
+
+**Containers / Images**
+clair, snyk, grype, hadolint
+
+**NodeJS**
+nodejsscan, retirejs, installed-check, better-npm-audit, eslint-plugin-security, eslint-plugin-no-unsanitized, eslint-plugin-no-secrets, node-version-audit, yarn-audit-fix
+
+
 - [How to use the tools inside](#how-to-use-the-tools-inside)
   - [GitXray | Harvest public information from GitHub APIs](#gitxray--harvest-public-information-from-github-apis)
   - [GH Fake Analyzer | Script to analyze profile GitHub data](#gh-fake-analyzer--script-to-analyze-profile-github-data)
@@ -96,18 +120,14 @@ designed for the OSINT/security community, enabling the inspection of potential 
 blackhat, or fake employee accounts for dark patterns (see, Malicious GitHub Accounts)
 
 ```bash
-# Analyzing users
-python analyze.py <username> # analyze a single user
-python analyze.py <username> --out_path /path/to/dir # save to different than /out dir
+gh-analyze <username> # analyze a single user
+gh-analyze <username> --out_path /path/to/dir # save to different than /out dir
+gh-analyze --targets <path> # custom_file.txt to read from as "targets"
+gh-analyze <username> --commit_search # search github for commit messages (slow, experimental)
+gh-analyze <username> --token <token> # provide GH_TOKEN to use for this run
 
-# Optionally, rename `targets.example` to `targets` 
-python analyze.py # read from "targets" and analyze all
-python analyze.py --targets <path> # custom_file.txt to read from as "targets"   
-python analyze.py <us
-
-# Monitor users
-python monitor.py --username <username> # Monitor single user
-python monitor.py --targets <file> # Monitor multiple usernames
+gh-monitor --username <username> # Monitor single user
+gh-monitor --targets <file> # Monitor multiple usernames
 ```
 
 ## git-secrets | Avoid commiting secrets
