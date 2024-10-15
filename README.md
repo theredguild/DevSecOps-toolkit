@@ -96,6 +96,7 @@ Examples:
   - [x] scoutsuite: Multi-Cloud Security Auditing Tool. (<https://github.com/nccgroup/ScoutSuite>)
   - [x] Cloudsplaining: AWS IAM assessment tool (<https://github.com/salesforce/cloudsplaining>)
   - [x] hadolint: Dockerfile linter. (<https://github.com/hadolint/hadolint>)
+  - [x] dockle: Container Image Linter for Security, Helping build the Best-Practice Docker Image, Easy to start. (<https://github.com/goodwithtech/dockle>)
 
 - [x] Dependency & lib checkers:
   - [x] DependencyCheck: OWASP dependency-check is a software composition analysis utility that
