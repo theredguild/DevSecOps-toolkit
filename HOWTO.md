@@ -69,7 +69,7 @@ nodejsscan, retirejs, installed-check, better-npm-audit, eslint-plugin-security,
     - [2ms Action | Apply too many secrets to your workflow](#2ms-action--apply-too-many-secrets-to-your-workflow)
     - [GitLeaks Action | Add gitleaks as a github action](#gitleaks-action--add-gitleaks-as-a-github-action)
     - [Trufflehog Action | Continuously scan for secrets](#trufflehog-action--continuously-scan-for-secrets)
-  - [Dockle action | Cointinuously scan for security issues in Docker files](#dockle-action--cointinuously-scan-for-security-issues-in-docker-files)
+    - [Dockle action | Cointinuously scan for security issues in Docker files](#dockle-action--cointinuously-scan-for-security-issues-in-docker-files)
   - [Online version of some tools](#online-version-of-some-tools)
 
 ## GitXray | Harvest public information from GitHub APIs 
@@ -1104,12 +1104,12 @@ Runs Trivy as GitHub action to scan your Docker container image for vulnerabilit
 
 **Scan | Secrets**
 
-## Dockle action | Cointinuously scan for security issues in Docker files
+### Dockle action | Cointinuously scan for security issues in Docker files
 
 [Action](https://github.com/marketplace/actions/dockle-container-image-linter)
 
 ## Online version of some tools
 
-[Scan a repo with **KICS**](https://kics.checkmarx.net/) - upt to 4mb
-[Scan your Dockerfile with **Hadolint** ](https://hadolint.github.io/hadolint)
-[Scan your GitHub Actions](https://app.stepsecurity.io/) 
+- [Scan a repo with **KICS**](https://kics.checkmarx.net/) - upt to 4mb
+- [Scan your Dockerfile with **Hadolint**](https://hadolint.github.io/hadolint)
+- [Scan your GitHub Actions](https://app.stepsecurity.io/) with StepSecurity
