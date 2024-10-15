@@ -94,47 +94,37 @@ RUN npm install -g pnpm
 ENV PNPM_HOME="/home/${USERNAME}/.local/share/pnpm"
 ENV PATH="${PNPM_HOME}:${PNPM_HOME}/global/node_modules/.bin:${PATH}"
 
-# Install ESLint and plugins using pnpm
-RUN pnpm install -g eslint \
-    eslint-plugin-security \
+# Pnpm-related tools
+ARG T_SNYK=1.1293.1
+ARG T_RETIRE=5.2.4
+RUN pnpm install -g eslint-plugin-security \
     eslint-plugin-no-unsanitized \
-    eslint-plugin-no-secrets
-
-# Install additional npm tools using pnpm
-RUN pnpm install -g node-version-audit \
+    eslint-plugin-no-secrets \
+    node-version-audit \
     yarn-audit-fix \
     better-npm-audit \
-    installed-check
+    installed-check \
+    snyk@${T_SNYK} \
+    retire@${T_RETIRE}
 
-# Install snyk
-RUN pnpm install -g snyk
+# Pipx-related tools
+ARG T_GITXRAY=1.0.15
+ARG T_SEMGREP=1.91.0
+ARG T_DETECT_SECRETS=1.5.0
+ARG T_NODEJSSCAN=3.7
+ARG T_CLOUDSPLAINING=0.7.0
+ARG T_CHECKOV=3.2.262
+ARG T_SCOUTSUITE=5.14.0
 
-# Install retire.js
-RUN pnpm install -g retire
-
-# Install detect-secrets
-RUN pipx install detect-secrets
-
-# Install gitxray
-RUN pipx install gitxray
-
-# Install semgrep
-RUN pipx install semgrep
-
-# Install nodejsscan
-RUN pipx install nodejsscan
-
-# Install cloudsplaining
-RUN pipx install cloudsplaining
-
-# Install checkov
-RUN pipx install checkov
-
-# Install scoutsuite
-RUN pipx install scoutsuite
-
-# pipx environment path set
-RUN pipx ensurepath
+RUN pipx install gitxray==$T_GITXRAY \
+    && pipx install semgrep==$T_SEMGREP \
+    && pipx install detect-secrets==$T_DETECT_SECRETS \
+    && pipx install nodejsscan==$T_NODEJSSCAN \
+    && pipx install cloudsplaining==$T_CLOUDSPLAINING \
+    && pipx install checkov==$T_CHECKOV \
+    && pipx install scoutsuite==$T_SCOUTSUITE \
+    && pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git \
+    && pipx ensurepath
 
 # Install git-secrets
 RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
@@ -143,22 +133,26 @@ RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
     && rm -rf secrets
 
 # Install gitleaks
-RUN git clone https://github.com/gitleaks/gitleaks.git gitleaks \
-    && cd gitleaks \
-    && make build \
-    && sudo ln -s /src/gitleaks/gitleaks /usr/local/bin
-
-# Install gh-fake-analyzer
-RUN pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git
+ARG T_GITLEAKS=8.21.0
+RUN arch=$(dpkg --print-architecture) \
+    && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
+    && wget https://github.com/gitleaks/gitleaks/releases/download/v${T_GITLEAKS}/gitleaks_${T_GITLEAKS}_linux_$arch.tar.gz \
+    -O gitleaks.tar.gz \
+    && sudo tar -xzf gitleaks.tar.gz -C /usr/local/bin gitleaks \
+    && sudo chmod +x /usr/local/bin/gitleaks \
+    && rm gitleaks.tar.gz
 
 # Install legitify
-RUN git clone https://github.com/Legit-Labs/legitify \
-    && cd legitify \
-    && go build \
-    && sudo ln -s /src/legitify/legitify /usr/local/bin/legitify
+ARG T_LEGITIFY=1.0.11
+RUN wget https://github.com/Legit-Labs/legitify/releases/download/v${T_LEGITIFY}/legitify_${T_LEGITIFY}_linux_$(dpkg --print-architecture).tar.gz \
+    -O legitify.tar.gz \
+    && sudo tar -xzf legitify.tar.gz -C /usr/local/bin legitify \
+    && sudo chmod +x /usr/local/bin/legitify \
+    && rm legitify.tar.gz
 
 # Install kics
-RUN git clone https://github.com/Checkmarx/kics.git \
+ARG T_KICS=2.1.3
+RUN git clone https://github.com/Checkmarx/kics.git -b v${T_KICS}  \
     && cd kics \
     && go mod vendor \
     && go build -o ./bin/kics cmd/console/main.go \
@@ -166,46 +160,63 @@ RUN git clone https://github.com/Checkmarx/kics.git \
     && echo 'export KICS_QUERIES_PATH=/src/kics/assets/queries' >> ~/.zshrc
 
 # Install Trivy
-RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null \
-    && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list \
-    && sudo apt-get update && sudo apt-get install -y trivy
+ARG T_TRIVY=0.56.2
+RUN arch=$(dpkg --print-architecture) \
+    && if [ "$arch" = "amd64" ]; then arch="64bit"; fi \
+    && if [ "$arch" = "arm64" ]; then arch="ARM64"; fi \
+    && wget https://github.com/aquasecurity/trivy/releases/download/v${T_TRIVY}/trivy_${T_TRIVY}_Linux-$arch.deb \
+    && sudo dpkg -i trivy_${T_TRIVY}_Linux-$arch.deb \
+    && rm trivy_${T_TRIVY}_Linux-$arch.deb
 
 # Install Trufflehog
-RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sudo sh -s -- -b /usr/local/bin
+ARG T_TRUFFLEHOG=3.82.8
+RUN wget https://github.com/trufflesecurity/trufflehog/releases/download/v${T_TRUFFLEHOG}/trufflehog_${T_TRUFFLEHOG}_linux_$(dpkg --print-architecture).tar.gz \
+    -O trufflehog.tar.gz \
+    && sudo tar -xzf trufflehog.tar.gz -C /usr/local/bin trufflehog \
+    && sudo chmod +x /usr/local/bin/trufflehog \
+    && rm trufflehog.tar.gz
 
 # Install hadolint
+ARG T_HADOLINT=2.12.0
 RUN arch=$(dpkg --print-architecture) \
     && if [ "$arch" = "amd64" ]; then arch="x86_64"; fi \
-    && wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-$arch \
+    && if [ "$arch" = "arm64" ]; then arch="arm64"; fi \
+    && wget https://github.com/hadolint/hadolint/releases/download/v${T_HADOLINT}/hadolint-Linux-$arch \
     && chmod +x hadolint-Linux-$arch \
     && sudo mv hadolint-Linux-$arch /usr/local/bin/hadolint
 
-
 # Install grype
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
+ARG T_GRYPE=0.82.1
+RUN wget https://github.com/anchore/grype/releases/download/v${T_GRYPE}/grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb \
+    && sudo dpkg -i grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb \
+    && rm grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb
+
 
 # Install dependency-check
-RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt) \
-    && curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPCHECK_VERSION}/dependency-check-${DEPCHECK_VERSION}-release.zip" \
-    --output dependency-check.zip \
+ARG T_DEPCHECK=10.0.4
+RUN wget -q https://github.com/jeremylong/DependencyCheck/releases/download/v${T_DEPCHECK}/dependency-check-${T_DEPCHECK}-release.zip \
+    -O dependency-check.zip \
     && unzip dependency-check.zip && rm -f dependency-check.zip \
     && chmod +x dependency-check/bin/dependency-check.sh \
     && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
 # Install 2ms
-RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-$(dpkg --print-architecture).zip | \
-    funzip - | sudo tee /usr/local/bin/2ms > /dev/null \
+ARG T_2MS=3.10.0
+RUN wget https://github.com/checkmarx/2ms/releases/download/v${T_2MS}/linux-amd64.zip \
+    && unzip linux-amd64.zip && rm -f linux-amd64.zip \
+    && sudo mv 2ms /usr/local/bin/2ms \
     && sudo chmod +x /usr/local/bin/2ms
 
 # Install clair
-RUN sudo wget -qO /usr/local/bin/clair https://github.com/quay/clair/releases/download/v4.8.0/clairctl-linux-$(dpkg --print-architecture) \
-    && sudo chmod +x /usr/local/bin/clair
-
-# Install Grype
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
+ARG T_CLAIR=4.8.0
+RUN wget https://github.com/quay/clair/releases/download/v${T_CLAIR}/clairctl-linux-$(dpkg --print-architecture) \
+    -O clairctl \
+    && chmod +x clairctl \
+    && sudo mv clairctl /usr/local/bin/clairctl
 
 # Clean up
-RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
+RUN sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*
 
 # Configure MOTD
 COPY --link --chown=root:root motd /etc/motd
