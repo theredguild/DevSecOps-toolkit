@@ -5,7 +5,7 @@ Unified repository with OSS security tools, just `make exec` and dive into the c
 There are some tools that have not been integrated to the main container itself, given their nature,
 but have been or will be added to the repository with an explanation on how to run them separately.
 
-## Firing up the container (OUTDATED)
+## Firing up the container
 
 ```bash
 % make
@@ -13,15 +13,17 @@ Usage:
   make <target>
 
 Targets:
-  build    Build the Docker image
+  build    Build the Docker image with the software versions described in the .env file
+  release  Build the Docker image with the software versions described in the .env file, but from a specific release of this repo
+  latest   Build the Docker image with the latest version for each tool
   exec     Run an interactive shell inside the container
-  clean    Remove the Docker image
 
 Examples:
   make
   make build
+  make release
+  make latest
   make exec
-  make clean
 ```
 
 ## Go to [how to use the tools inside](./HOWTO.md) to understand how each one of them actually work
