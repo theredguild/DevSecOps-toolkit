@@ -192,6 +192,13 @@ RUN DEPCHECK_VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/curr
     && chmod +x dependency-check/bin/dependency-check.sh \
     && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
+# Install dockle
+RUN VERSION=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+    grep '"tag_name":' | \
+    sed -E 's/.*"v([^"]+)".*/\1/') \
+    && curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.deb \
+    && sudo dpkg -i dockle.deb && rm dockle.deb
+
 # Install 2ms
 RUN wget -qO - https://github.com/checkmarx/2ms/releases/latest/download/linux-$(dpkg --print-architecture).zip | \
     funzip - | sudo tee /usr/local/bin/2ms > /dev/null \

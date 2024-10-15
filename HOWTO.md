@@ -45,6 +45,7 @@ nodejsscan, retirejs, installed-check, better-npm-audit, eslint-plugin-security,
   - [ScoutSuite | Multi-cloud security-auditing tool](#scoutsuite--multi-cloud-security-auditing-tool)
   - [Cloudsplaining | AWS IAM assessment tool](#cloudsplaining--aws-iam-assessment-tool)
   - [Hadolint | Scans Dockerfiles for good linting practices](#hadolint--scans-dockerfiles-for-good-linting-practices)
+  - [Dockle | Container image linter for security](#dockle--container-image-linter-for-security)
   - [DependencyCheck | Checks for public vulns on dependencies](#dependencycheck--checks-for-public-vulns-on-dependencies)
   - [nodejsscan | NodeJS application code scanner](#nodejsscan--nodejs-application-code-scanner)
   - [Lavamoat | JS framework to prevent supply-chain attacks](#lavamoat--js-framework-to-prevent-supply-chain-attacks)
@@ -68,6 +69,7 @@ nodejsscan, retirejs, installed-check, better-npm-audit, eslint-plugin-security,
     - [2ms Action | Apply too many secrets to your workflow](#2ms-action--apply-too-many-secrets-to-your-workflow)
     - [GitLeaks Action | Add gitleaks as a github action](#gitleaks-action--add-gitleaks-as-a-github-action)
     - [Trufflehog Action | Continuously scan for secrets](#trufflehog-action--continuously-scan-for-secrets)
+  - [Dockle action | Cointinuously scan for security issues in Docker files](#dockle-action--cointinuously-scan-for-security-issues-in-docker-files)
   - [Online version of some tools](#online-version-of-some-tools)
 
 ## GitXray | Harvest public information from GitHub APIs 
@@ -701,6 +703,26 @@ Dockerfile:8 DL3008 warning: Pin versions in apt get install. Instead of `apt-ge
 Dockerfile:8 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
 ```
 
+## Dockle | Container image linter for security
+
+[GitHub](https://github.com/goodwithtech/dockle) | [Website](https://containers.goodwith.tech/) | [Action](https://github.com/goodwithtech/dockle-action)
+Docker | Linter
+
+1. Build [Best Practice](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/) Docker images
+2. Build secure Docker images
+Checkpoints includes [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/)
+
+```bash
+# Scan an image name (and a tag)
+dockle goodwithtech/test-image:v1
+
+# Scan an image file
+docker save alpine:latest -o alpine.tar
+dockle --input alpine.tar
+```
+
+For more examples go to their [docs](https://github.com/goodwithtech/dockle?tab=readme-ov-file#common-examples).
+
 ## DependencyCheck | Checks for public vulns on dependencies
 
 [GitHub](https://github.com/jeremylong/DependencyCheck)
@@ -1081,6 +1103,10 @@ Runs Trivy as GitHub action to scan your Docker container image for vulnerabilit
 [Action](https://github.com/marketplace/actions/trufflehog-oss)
 
 **Scan | Secrets**
+
+## Dockle action | Cointinuously scan for security issues in Docker files
+
+[Action](https://github.com/marketplace/actions/dockle-container-image-linter)
 
 ## Online version of some tools
 
