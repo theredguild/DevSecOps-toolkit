@@ -1,4 +1,4 @@
-IMAGE_NAME := devsecops-toolset
+IMAGE_NAME := devsecops-toolkit
 .DEFAULT_GOAL := help
 
 # Get the latest release tag from git
@@ -27,7 +27,10 @@ help:
 
 # Build the Docker image using current branch
 build:
-	docker build $(BUILD_ARGS) -t $(IMAGE_NAME):latest .
+	@if ! docker images $(IMAGE_NAME) | awk '{ print $$1 }' | grep -q "^$(IMAGE_NAME)$$"; then \
+		echo "Docker image $(IMAGE_NAME) not found. Building now..."; \
+		docker build $(BUILD_ARGS) -t $(IMAGE_NAME) .; \
+	fi
 
 # Build the Docker image using the latest release
 release:
@@ -41,6 +44,6 @@ latest:
 
 exec: build
 	@echo "Running interactive shell inside the $(IMAGE_NAME) container..."
-	@docker run --rm -it -v $(PWD):/workdir $(IMAGE_NAME):latest /bin/bash
+	@docker run --rm -it -v $(PWD):/workdir $(IMAGE_NAME):latest /bin/zsh
 
 .PHONY: help build release latest exec
