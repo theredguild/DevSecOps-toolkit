@@ -18,7 +18,7 @@ checkov, scoutsuite, dependency-check
 falco, snyk, cloudsplaining
 
 **Containers / Images**
-clair, snyk, grype, hadolint
+clair, snyk, grype, hadolint, dockle
 
 **NodeJS**
 nodejsscan, retirejs, installed-check, better-npm-audit, eslint-plugin-security, eslint-plugin-no-unsanitized, eslint-plugin-no-secrets, node-version-audit, yarn-audit-fix

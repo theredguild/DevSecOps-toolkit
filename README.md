@@ -5,7 +5,9 @@ Unified repository with OSS security tools, just `make exec` and dive into the c
 There are some tools that have not been integrated to the main container itself, given their nature,
 but have been or will be added to the repository with an explanation on how to run them separately.
 
-## Firing up the container
+## First step
+
+### Firing up the container
 
 ```bash
 % make
@@ -26,9 +28,12 @@ Examples:
   make exec
 ```
 
-## Go to [how to use the tools inside](./HOWTO.md) to understand how each one of them actually work
+## Second step
 
-## Tools included in this container
+Now you have your container up and running, but what am I supposed to do with it?
+Well, go to **[how to use the tools inside](./HOWTO.md)** to understand how each one of them actually work.
+
+### Tools included in this repository
 
 - [x] GitHub analysis (fake profiles, OSINT):
   - [x] gitxray: A multifaceted security tool that leverages Public GitHub REST APIs for OSINT,
