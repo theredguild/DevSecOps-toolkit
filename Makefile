@@ -51,6 +51,6 @@ latest:
 
 exec: build
 	@echo "Running interactive shell inside the $(IMAGE_NAME) container..."
-	@docker run --rm -it -v $(PWD):/workdir $(IMAGE_NAME):latest /bin/zsh
+	@docker run --hostname trg --rm -it -v $(PWD):/workdir $(IMAGE_NAME):latest /bin/zsh
 
 .PHONY: help build release latest exec
