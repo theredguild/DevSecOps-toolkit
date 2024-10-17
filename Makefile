@@ -7,6 +7,13 @@ LATEST_RELEASE := $(shell git describe --tags --abbrev=0)
 include .env
 BUILD_ARGS := $(foreach VAR,$(shell sed 's/=.*//' .env),--build-arg $(VAR)=$($(VAR)))
 
+# Use buildx only in GitHub Actions
+ifdef GITHUB_ACTIONS
+	DOCKER_BUILD_CMD := docker buildx build --load --cache-from type=gha --cache-to type=gha,mode=max
+else
+	DOCKER_BUILD_CMD := docker build
+endif
+
 help:
 	@echo "Usage:"
 	@echo "  make <target>"
@@ -29,7 +36,7 @@ help:
 build:
 	@if ! docker images $(IMAGE_NAME) | awk '{ print $$1 }' | grep -q "^$(IMAGE_NAME)$$"; then \
 		echo "Docker image $(IMAGE_NAME) not found. Building now..."; \
-		docker build $(BUILD_ARGS) -t $(IMAGE_NAME) .; \
+		$(DOCKER_BUILD_CMD) $(BUILD_ARGS) -t $(IMAGE_NAME) .; \
 	fi
 
 # Build the Docker image using the latest release
@@ -40,7 +47,7 @@ release:
 
 # TODO: Check this.
 latest:
-	docker build $(foreach VAR,$(shell sed 's/=.*//' .env),--build-arg $(VAR)=latest) -t $(IMAGE_NAME):latest .
+	$(DOCKER_BUILD_CMD) $(foreach VAR,$(shell sed 's/=.*//' .env),--build-arg $(VAR)=latest) -t $(IMAGE_NAME):latest .
 
 exec: build
 	@echo "Running interactive shell inside the $(IMAGE_NAME) container..."
