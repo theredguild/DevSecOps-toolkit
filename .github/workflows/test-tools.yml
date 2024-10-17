@@ -22,8 +22,9 @@ jobs:
           android: true
           dotnet: true
           haskell: true
-          large-packages: true
-          swap-storage: true
+          large-packages: false
+          swap-storage: false
+          docker-images: false
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,3 +36,6 @@ jobs:
         run: make build
         env:
           DOCKER_BUILDKIT: 1
+
+      - name: Check disk space
+        run: df -h
