@@ -7,26 +7,27 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 # Additional ARGs for tool versions
-ARG T_SNYK
-ARG T_RETIRE
-ARG T_GITXRAY
-ARG T_SEMGREP
-ARG T_DETECT_SECRETS
-ARG T_NODEJSSCAN
-ARG T_CLOUDSPLAINING
+ARG T_2MS
 ARG T_CHECKOV
-ARG T_SCOUTSUITE
+ARG T_CLAIR
+ARG T_CLOUDSPLAINING
+ARG T_DEPCHECK
+ARG T_DETECT_SECRETS
+ARG T_DOCKLE
+ARG T_GITXRAY
 ARG T_GITLEAKS
-ARG T_LEGITIFY
+ARG T_GRYPE
+ARG T_HADOLINT
 ARG T_KICS
+ARG T_LEGITIFY
+ARG T_NODEJSSCAN
+ARG T_RETIRE
+ARG T_SCOUTSUITE
+ARG T_SEMGREP
+ARG T_SNYK
 ARG T_TRIVY
 ARG T_TRUFFLEHOG
-ARG T_HADOLINT
-ARG T_GRYPE
-ARG T_DEPCHECK
-ARG T_2MS
-ARG T_CLAIR
-ARG T_DOCKLE
+ARG T_DEPSCAN
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
@@ -124,49 +125,49 @@ RUN pnpm install -g eslint-plugin-security \
     yarn-audit-fix \
     better-npm-audit \
     installed-check \
-    snyk@${T_SNYK} \
+    # snyk@${T_SNYK} \
     retire@${T_RETIRE}
 
 # Pipx-related tools
 RUN pipx install gitxray==$T_GITXRAY \
     && pipx install semgrep==$T_SEMGREP \
-    && pipx install detect-secrets==$T_DETECT_SECRETS \
+    # && pipx install detect-secrets==$T_DETECT_SECRETS \
     && pipx install nodejsscan==$T_NODEJSSCAN \
-    && pipx install cloudsplaining==$T_CLOUDSPLAINING \
+    # && pipx install cloudsplaining==$T_CLOUDSPLAINING \
     && pipx install checkov==$T_CHECKOV \
-    && pipx install scoutsuite==$T_SCOUTSUITE \
+    # && pipx install scoutsuite==$T_SCOUTSUITE \
     && pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git \
     && pipx ensurepath
 
-# Install git-secrets
-RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
-    && cd git-secrets \
-    && sudo make install \
-    && rm -rf secrets
+# # Install git-secrets
+# RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
+#     && cd git-secrets \
+#     && sudo make install \
+#     && rm -rf secrets
 
-# Install gitleaks
-RUN arch=$(dpkg --print-architecture) \
-    && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
-    && wget https://github.com/gitleaks/gitleaks/releases/download/v${T_GITLEAKS}/gitleaks_${T_GITLEAKS}_linux_$arch.tar.gz \
-    -O gitleaks.tar.gz \
-    && sudo tar -xzf gitleaks.tar.gz -C /usr/local/bin gitleaks \
-    && sudo chmod +x /usr/local/bin/gitleaks \
-    && rm gitleaks.tar.gz
+# # Install gitleaks
+# RUN arch=$(dpkg --print-architecture) \
+#     && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
+#     && wget https://github.com/gitleaks/gitleaks/releases/download/v${T_GITLEAKS}/gitleaks_${T_GITLEAKS}_linux_$arch.tar.gz \
+#     -O gitleaks.tar.gz \
+#     && sudo tar -xzf gitleaks.tar.gz -C /usr/local/bin gitleaks \
+#     && sudo chmod +x /usr/local/bin/gitleaks \
+#     && rm gitleaks.tar.gz
 
-# Install legitify
-RUN wget https://github.com/Legit-Labs/legitify/releases/download/v${T_LEGITIFY}/legitify_${T_LEGITIFY}_linux_$(dpkg --print-architecture).tar.gz \
-    -O legitify.tar.gz \
-    && sudo tar -xzf legitify.tar.gz -C /usr/local/bin legitify \
-    && sudo chmod +x /usr/local/bin/legitify \
-    && rm legitify.tar.gz
+# # Install legitify
+# RUN wget https://github.com/Legit-Labs/legitify/releases/download/v${T_LEGITIFY}/legitify_${T_LEGITIFY}_linux_$(dpkg --print-architecture).tar.gz \
+#     -O legitify.tar.gz \
+#     && sudo tar -xzf legitify.tar.gz -C /usr/local/bin legitify \
+#     && sudo chmod +x /usr/local/bin/legitify \
+#     && rm legitify.tar.gz
 
-# Install kics
-RUN git clone https://github.com/Checkmarx/kics.git -b v${T_KICS}  \
-    && cd kics \
-    && go mod vendor \
-    && go build -o ./bin/kics cmd/console/main.go \
-    && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics \
-    && echo 'export KICS_QUERIES_PATH=/src/kics/assets/queries' >> ~/.zshrc
+# # Install kics
+# RUN git clone https://github.com/Checkmarx/kics.git -b v${T_KICS}  \
+#     && cd kics \
+#     && go mod vendor \
+#     && go build -o ./bin/kics cmd/console/main.go \
+#     && sudo ln -s /src/kics/bin/kics /usr/local/bin/kics \
+#     && echo 'export KICS_QUERIES_PATH=/src/kics/assets/queries' >> ~/.zshrc
 
 # Install Trivy
 RUN arch=$(dpkg --print-architecture) \
@@ -183,18 +184,18 @@ RUN wget https://github.com/trufflesecurity/trufflehog/releases/download/v${T_TR
     && sudo chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz
 
-# Install hadolint
-RUN arch=$(dpkg --print-architecture) \
-    && if [ "$arch" = "amd64" ]; then arch="x86_64"; fi \
-    && if [ "$arch" = "arm64" ]; then arch="arm64"; fi \
-    && wget https://github.com/hadolint/hadolint/releases/download/v${T_HADOLINT}/hadolint-Linux-$arch \
-    && chmod +x hadolint-Linux-$arch \
-    && sudo mv hadolint-Linux-$arch /usr/local/bin/hadolint
+# # Install hadolint
+# RUN arch=$(dpkg --print-architecture) \
+#     && if [ "$arch" = "amd64" ]; then arch="x86_64"; fi \
+#     && if [ "$arch" = "arm64" ]; then arch="arm64"; fi \
+#     && wget https://github.com/hadolint/hadolint/releases/download/v${T_HADOLINT}/hadolint-Linux-$arch \
+#     && chmod +x hadolint-Linux-$arch \
+#     && sudo mv hadolint-Linux-$arch /usr/local/bin/hadolint
 
-# Install grype
-RUN wget https://github.com/anchore/grype/releases/download/v${T_GRYPE}/grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb \
-    && sudo dpkg -i grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb \
-    && rm grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb
+# # Install grype
+# RUN wget https://github.com/anchore/grype/releases/download/v${T_GRYPE}/grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb \
+#     && sudo dpkg -i grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb \
+#     && rm grype_${T_GRYPE}_linux_$(dpkg --print-architecture).deb
 
 
 # Install dependency-check
@@ -205,9 +206,6 @@ RUN wget -q https://github.com/jeremylong/DependencyCheck/releases/download/v${T
     && sudo ln -s /src/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
 # Install dockle
-# VERSION=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
-# grep '"tag_name":' | \
-#  sed -E 's/.*"v([^"]+)".*/\1/')
 RUN curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${T_DOCKLE}/dockle_${T_DOCKLE}_Linux-64bit.deb \
     && sudo dpkg -i dockle.deb && rm dockle.deb
 
@@ -222,6 +220,11 @@ RUN wget https://github.com/quay/clair/releases/download/v${T_CLAIR}/clairctl-li
     -O clairctl \
     && chmod +x clairctl \
     && sudo mv clairctl /usr/local/bin/clairctl
+
+# Install depscan
+RUN curl -LO https://github.com/owasp-dep-scan/depscan-bin/releases/download/v${T_DEPSCAN}/depscan-linux-amd64 \
+    && chmod +x depscan-linux-amd64 \
+    && sudo mv depscan-linux-amd64 /usr/local/bin/depscan
 
 # Clean up
 RUN sudo apt-get clean \
