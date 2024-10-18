@@ -32,10 +32,32 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build container using Make
-        run: make build
-        env:
-          DOCKER_BUILDKIT: 1
+      - name: Load .env file
+        id: dotenv
+        uses: xom9ikk/dotenv@v2
+
+      - name: Prepare build args
+        id: prep
+        run: |
+          {
+            echo 'BUILD_ARGS<<EOF'
+            while IFS='=' read -r key value; do
+              if [[ ! -z "$key" && ! "$key" =~ ^# ]]; then
+                echo "${key}=${value}"
+              fi
+            done < .env
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Build container
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: theredguild/container-sec-tools:latest
+          build-args: ${{ steps.prep.outputs.BUILD_ARGS }}
 
       - name: Check disk space
         run: df -h
