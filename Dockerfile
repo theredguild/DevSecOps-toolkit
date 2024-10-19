@@ -28,6 +28,7 @@ ARG T_SNYK
 ARG T_TRIVY
 ARG T_TRUFFLEHOG
 ARG T_DEPSCAN
+ARG T_OCTOSCAN
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
@@ -57,6 +58,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     default-jre \
     yarn \
+    fdupes \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a user group named trg and a user named wanderer with specified UID and GID
@@ -138,6 +140,24 @@ RUN pipx install gitxray==$T_GITXRAY \
     # && pipx install scoutsuite==$T_SCOUTSUITE \
     && pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git \
     && pipx ensurepath
+
+RUN git clone https://github.com/mattaereal/gh-workflow-auditor \
+    && cd gh-workflow-auditor \
+    && python3 -m venv gwa \
+    && source gwa/bin/activate \
+    && pip install -r requirements.txt \
+    && exit
+
+USER root
+
+RUN echo '#!/bin/zsh\n\
+    source /src/gh-workflow-auditor/gwa/bin/activate\n\
+    python3 /src/gh-workflow-auditor/main.py "$@"\n\
+    deactivate' > /usr/local/bin/gh-workflow-auditor \
+        && chmod +x /usr/local/bin/gh-workflow-auditor \
+        && chown -R wanderer:trg /usr/local/bin/gh-workflow-auditor
+
+USER wanderer
 
 # # Install git-secrets
 # RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
@@ -225,6 +245,11 @@ RUN wget https://github.com/quay/clair/releases/download/v${T_CLAIR}/clairctl-li
 RUN curl -LO https://github.com/owasp-dep-scan/depscan-bin/releases/download/v${T_DEPSCAN}/depscan-linux-amd64 \
     && chmod +x depscan-linux-amd64 \
     && sudo mv depscan-linux-amd64 /usr/local/bin/depscan
+
+# Install Octoscan
+RUN curl -LO https://github.com/synacktiv/octoscan/releases/download/v${T_OCTOSCAN}/octoscan \
+    && chmod +x octoscan \
+    && sudo mv octoscan /usr/local/bin
 
 # Clean up
 RUN sudo apt-get clean \

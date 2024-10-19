@@ -3,7 +3,6 @@
 Minimal toolkit container for a 2024 Devcon Workshop.
 Just run `make exec` and dive into the container!
 
-
 ## First step
 
 ### Firing up the container
@@ -15,6 +14,7 @@ Usage:
 
 Targets:
   build    Build the Docker image with the software versions described in the .env file
+  rebuild  Forces build, even if a previous image exists. Won't delete the previous ones.
   release  Build the Docker image with the software versions described in the .env file, but from a specific release of this repo
   latest   Build the Docker image with the latest version for each tool
   exec     Run an interactive shell inside the container
@@ -22,6 +22,7 @@ Targets:
 Examples:
   make
   make build
+  make rebuild
   make release
   make latest
   make exec
