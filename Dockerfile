@@ -149,7 +149,7 @@ RUN pipx install gitxray==${T_GITXRAY} \
     && pipx install scoutsuite==${T_SCOUTSUITE} \
     && pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git \
     && pipx install prowler==${T_PROWLER} \
-    && pipx install njsscan=${T_NJSSCAN} \
+    && pipx install njsscan==${T_NJSSCAN} \
     && pipx ensurepath
 
 # Install git-secrets
