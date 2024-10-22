@@ -134,7 +134,7 @@ RUN pnpm install -g eslint-plugin-security \
 
 # Manually install Cloudsploit
 RUN git clone --branch v${T_CLOUDSPLOIT} https://github.com/aquasecurity/cloudsploit.git \
-    && cloudsploit \
+    && cd cloudsploit \
     && npm init --yes \
     && npm install ${PACKAGENAME} \
     && npm link /src/cloudsploit
