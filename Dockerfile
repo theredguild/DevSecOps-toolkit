@@ -7,26 +7,31 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 # Additional ARGs for tool versions
-ARG T_SNYK
-ARG T_RETIRE
-ARG T_GITXRAY
-ARG T_SEMGREP
-ARG T_DETECT_SECRETS
-ARG T_NODEJSSCAN
-ARG T_CLOUDSPLAINING
+ARG T_2MS
 ARG T_CHECKOV
-ARG T_SCOUTSUITE
+ARG T_CLAIR
+ARG T_CLOUDSPLAINING
+ARG T_CLOUDSPLOIT
+ARG T_DEPCHECK
+ARG T_DEPSCAN
+ARG T_DETECT_SECRETS
+ARG T_DOCKLE
 ARG T_GITLEAKS
-ARG T_LEGITIFY
+ARG T_GITXRAY
+ARG T_GRYPE
+ARG T_HADOLINT
 ARG T_KICS
+ARG T_LEGITIFY
+ARG T_NJSSCAN
+ARG T_NODEJSSCAN
+ARG T_OCTOSCAN
+ARG T_PROWLER
+ARG T_RETIRE
+ARG T_SCOUTSUITE
+ARG T_SEMGREP
+ARG T_SNYK
 ARG T_TRIVY
 ARG T_TRUFFLEHOG
-ARG T_HADOLINT
-ARG T_GRYPE
-ARG T_DEPCHECK
-ARG T_2MS
-ARG T_CLAIR
-ARG T_DOCKLE
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
@@ -127,15 +132,24 @@ RUN pnpm install -g eslint-plugin-security \
     snyk@${T_SNYK} \
     retire@${T_RETIRE}
 
+# Manually install Cloudsploit
+RUN git clone --branch v${T_CLOUDSPLOIT} https://github.com/aquasecurity/cloudsploit.git \
+    && cloudsploit \
+    && npm init --yes \
+    && npm install ${PACKAGENAME} \
+    && npm link /src/cloudsploit
+
 # Pipx-related tools
-RUN pipx install gitxray==$T_GITXRAY \
-    && pipx install semgrep==$T_SEMGREP \
-    && pipx install detect-secrets==$T_DETECT_SECRETS \
-    && pipx install nodejsscan==$T_NODEJSSCAN \
-    && pipx install cloudsplaining==$T_CLOUDSPLAINING \
-    && pipx install checkov==$T_CHECKOV \
-    && pipx install scoutsuite==$T_SCOUTSUITE \
+RUN pipx install gitxray==${T_GITXRAY} \
+    && pipx install semgrep==${T_SEMGREP} \
+    && pipx install detect-secrets==${T_DETECT_SECRETS} \
+    && pipx install nodejsscan==${T_NODEJSSCAN} \
+    && pipx install cloudsplaining==${T_CLOUDSPLAINING} \
+    && pipx install checkov==${T_CHECKOV} \
+    && pipx install scoutsuite==${T_SCOUTSUITE} \
     && pipx install git+https://github.com/shortdoom/gh-fake-analyzer.git \
+    && pipx install prowler==${T_PROWLER} \
+    && pipx install njsscan=${T_NJSSCAN} \
     && pipx ensurepath
 
 # Install git-secrets
@@ -143,6 +157,24 @@ RUN git clone https://github.com/awslabs/git-secrets.git git-secrets \
     && cd git-secrets \
     && sudo make install \
     && rm -rf secrets
+
+RUN git clone https://github.com/mattaereal/gh-workflow-auditor \
+    && cd gh-workflow-auditor \
+    && python3 -m venv gwa \
+    && source gwa/bin/activate \
+    && pip install -r requirements.txt \
+    && exit
+
+USER root
+
+RUN echo '#!/bin/zsh\n\
+    source /src/gh-workflow-auditor/gwa/bin/activate\n\
+    python3 /src/gh-workflow-auditor/main.py "$@"\n\
+    deactivate' > /usr/local/bin/gh-workflow-auditor \
+        && chmod +x /usr/local/bin/gh-workflow-auditor \
+        && chown -R wanderer:trg /usr/local/bin/gh-workflow-auditor
+
+USER wanderer
 
 # Install gitleaks
 RUN arch=$(dpkg --print-architecture) \
@@ -222,6 +254,16 @@ RUN wget https://github.com/quay/clair/releases/download/v${T_CLAIR}/clairctl-li
     -O clairctl \
     && chmod +x clairctl \
     && sudo mv clairctl /usr/local/bin/clairctl
+
+# Install depscan
+RUN curl -LO https://github.com/owasp-dep-scan/depscan-bin/releases/download/v${T_DEPSCAN}/depscan-linux-amd64 \
+    && chmod +x depscan-linux-amd64 \
+    && sudo mv depscan-linux-amd64 /usr/local/bin/depscan
+
+# Install Octoscan
+RUN curl -LO https://github.com/synacktiv/octoscan/releases/download/v${T_OCTOSCAN}/octoscan \
+    && chmod +x octoscan \
+    && sudo mv octoscan /usr/local/bin
 
 # Clean up
 RUN sudo apt-get clean \
