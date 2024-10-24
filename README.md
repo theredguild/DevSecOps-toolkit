@@ -10,22 +10,25 @@ but have been or will be added to the repository with an explanation on how to r
 ### Firing up the container
 
 ```bash
-% make
 Usage:
   make <target>
 
 Targets:
-  build    Build the Docker image with the software versions described in the .env file
-  release  Build the Docker image with the software versions described in the .env file, but from a specific release of this repo
-  latest   Build the Docker image with the latest version for each tool
-  exec     Run an interactive shell inside the container
+  build    "Build the Docker image with the software versions described in the .env file"
+  rebuild  "Forces build, even if a previous image exists. Won't delete previous images"
+  release  "Build the Docker image with the software versions described in the .env file, but from a specific release of this repo"
+  latest   "Build the Docker image with the latest version for each tool"
+  exec     "Run an interactive shell inside the container"
+  clean    "Remove Docker image $(IMAGE_NAME) and wipe cache (CAREFUL)"
 
 Examples:
   make
   make build
+  make rebuild
   make release
   make latest
   make exec
+  make clean
 ```
 
 ## Second step
