@@ -3,7 +3,7 @@
 Unified repository with OSS security tools, just `make exec` and dive into the container!
 
 There are some tools that have not been integrated into the main container itself, given their nature,
-but have been or will be added to the repository with an explanation on how to run them separately.
+but have been or will be added to the repository with an explanation of how to run them separately.
 
 ## First step
 
