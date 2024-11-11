@@ -21,7 +21,6 @@ help:
 	@echo "Targets:"
 	@echo "  build    Build the Docker image with the software versions described in the .env file"
 	@echo "  release  Build the Docker image with the software versions described in the .env file, but from a specific release of this repo"
-	@echo "  latest   Build the Docker image with the latest version for each tool"
 	@echo "  exec     Run an interactive shell inside the container"
 	@echo "  clean    Remove Docke image $(IMAGE_NAME) and wipe cache (CAREFUL)"
 	@echo ""
@@ -30,7 +29,6 @@ help:
 	@echo "  make build"
 	@echo "  make rebuild"
 	@echo "  make release"
-	@echo "  make latest"
 	@echo "  make exec"
 	@echo "  make clean"
 	@echo ""
@@ -54,10 +52,7 @@ release:
 	@$(MAKE) build
 	@git checkout -
 
-# TODO: Check this.
-latest:
-	@$(DOCKER_BUILD_CMD) $(foreach VAR,$(shell sed 's/=.*//' .env),--build-arg $(VAR)=latest) -t $(IMAGE_NAME):latest .
-
+# TODO: implement latest
 exec: build
 	@echo "Running interactive shell inside the $(IMAGE_NAME) container..."
 	@docker run --hostname trg --rm -it -v $(PWD):/workdir $(IMAGE_NAME):latest /bin/zsh
@@ -66,4 +61,4 @@ clean:
 	@echo "Removing Docker image with the name $(IMAGE_NAME)..."
 	@docker rmi -f $(IMAGE_NAME) && docker builder prune -f
 
-.PHONY: help build rebuild release latest exec clean
+.PHONY: help build rebuild release exec clean
